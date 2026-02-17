@@ -1,28 +1,32 @@
--- Step 1: Drop if exists to allow re-runs
+-- sql/label_definition.sql
 DROP TABLE IF EXISTS labeled_patients;
 
--- Step 2: Create a table where we calculate the 'Risk Score'
+-- We use a Common Table Expression (CTE) to calculate flags separately
+-- This is cleaner and more professional
 CREATE TABLE labeled_patients AS
-SELECT 
+WITH flag_calculation AS (
+  SELECT
     *,
-    -- Calculate how many 'Red Flags' a patient has
+    (systolic_bp > 140)::INT AS bp_flag,
+    (hba1c >= 6.5)::INT AS a1c_flag,
     (
-        (systolic_bp > 140)::INT + 
-        (hba1c > 6.5)::INT + 
-        (serum_creatinine > 1.2)::INT
-    ) as risk_factor_count,
-    
-    -- If they have 2 or more flags, they are 'High Risk' (Target = 1)
-    CASE 
-        WHEN (
-            (systolic_bp > 140)::INT + 
-            (hba1c > 6.5)::INT + 
-            (serum_creatinine > 1.2)::INT
-        ) >= 2 THEN 1 
-        ELSE 0 
-    END as is_high_risk
-FROM raw_patient_data
--- We only label patients who have all three readings (Quality Control)
-WHERE systolic_bp IS NOT NULL 
-  AND hba1c IS NOT NULL 
-  AND serum_creatinine IS NOT NULL;
+      CASE
+        WHEN gender = 1 AND serum_creatinine > 1.3 THEN 1
+        WHEN gender = 2 AND serum_creatinine > 1.1 THEN 1
+        ELSE 0
+      END
+    ) AS renal_flag
+  FROM raw_patient_data
+  WHERE systolic_bp IS NOT NULL
+    AND hba1c IS NOT NULL
+    AND serum_creatinine IS NOT NULL
+)
+SELECT
+  *,
+  (bp_flag + a1c_flag + renal_flag) AS risk_factor_count,
+  -- The Proxy Target: ≥2 indicates systemic BioCascade risk
+  CASE 
+    WHEN (bp_flag + a1c_flag + renal_flag) >= 2 THEN 1 
+    ELSE 0 
+  END AS is_high_risk
+FROM flag_calculation;
