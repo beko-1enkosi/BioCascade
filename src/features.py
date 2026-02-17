@@ -1,7 +1,6 @@
 import pandas as pd
 import duckdb
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 
 def engineer_features():
     db_path = 'data/processed/biocascade.db'
@@ -9,40 +8,28 @@ def engineer_features():
 
     # 1. Load the labeled data
     df = con.execute("SELECT * FROM labeled_patients").df()
-    print(f"📈 Processing {len(df)} patients for feature engineering...")
+    print(f"📈 Engineering features for {len(df)} patients...")
 
-    # 2. FEATURE ENGINEERING: Creating 'Deep' Biocascade Features
-    # This prevents 'cheating' by forcing the AI to look at relationships
+    # 2. ADD PULSE PRESSURE (Vascular Stiffness Proxy)
+    # High pulse pressure is a strong indicator of HFpEF risk
+    df['pulse_pressure'] = df['systolic_bp'] - df['diastolic_bp']
     
-    # Vascular-Metabolic Load (Interaction)
+    # 3. INTERACTION FEATURE (Vascular-Metabolic Load)
     df['vasc_metabolic_load'] = df['systolic_bp'] * df['hba1c']
     
-    # Age-Adjusted Renal Stress (Renal-Efficiency)
-    # We use a small epsilon (1e-6) to avoid division by zero
+    # 4. EXPLORATORY RENAL INDICATOR (Relative to Age)
     df['renal_age_index'] = df['serum_creatinine'] / (df['age'] + 1)
     
-    # 3. HANDLING OUTLIERS: Log Transformation
-    # Medical markers like Triglycerides often have extreme spikes
+    # 5. LOG TRANSFORM (Handling Skewed Triglycerides)
     df['log_triglycerides'] = np.log1p(df['triglycerides'])
 
-    # 4. SCALING: Bringing all numbers to the same 'size'
-    # AI struggles if one column is 0-1 and another is 0-200.
-    features_to_scale = [
-        'age', 'systolic_bp', 'diastolic_bp', 'hba1c', 
-        'serum_creatinine', 'vasc_metabolic_load', 
-        'renal_age_index', 'log_triglycerides'
-    ]
-    
-    scaler = StandardScaler()
-    df[features_to_scale] = scaler.fit_transform(df[features_to_scale])
-
-    # 5. SAVE: Store the final matrix back to DuckDB
-    con.execute("DROP TABLE IF EXISTS feature_matrix")
+    # 6. SAVE RAW (No Scaling here to avoid Data Leakage!)
+    con.execute("DROP TABLE IF EXISTS feature_matrix_raw")
     con.register('df_final', df)
-    con.execute("CREATE TABLE feature_matrix AS SELECT * FROM df_final")
+    con.execute("CREATE TABLE feature_matrix_raw AS SELECT * FROM df_final")
     
-    print("✅ Feature Matrix created and scaled.")
-    print(f"🛠️ Engineered Features: vasc_metabolic_load, renal_age_index, log_triglycerides")
+    print("✅ Raw Feature Matrix created.")
+    print("📊 Pulse Pressure added as a proxy for vascular stiffness.")
 
 if __name__ == "__main__":
     engineer_features()
