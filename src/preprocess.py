@@ -3,26 +3,29 @@ import duckdb
 import os
 
 def load_to_duckdb():
-    # 1. Define paths
     db_path = 'data/processed/biocascade.db'
-    
-    # 2. Connect to DuckDB (it will create the file if it doesn't exist)
     con = duckdb.connect(db_path)
     
     print("🔨 Step 1: Building the database tables from schema...")
-    # This reads your sql/schema.sql file to create the table
+    # We use a 'DROP TABLE' first to ensure we don't get Primary Key errors on re-run
+    con.execute("DROP TABLE IF EXISTS raw_patient_data")
     with open('sql/schema.sql', 'r') as f:
         con.execute(f.read())
 
-    print("🧬 Step 2: Loading Kaggle CSV files into memory...")
-    # We use Pandas because it's the gold standard for reading CSVs
-    # Make sure these files are in your data/raw/ folder!
+    print("🧬 Step 2: Loading NHANES CSV files into memory...")
     df_demo = pd.read_csv('data/raw/demographics.csv')
     df_exam = pd.read_csv('data/raw/examination.csv')
     df_lab = pd.read_csv('data/raw/laboratory.csv')
 
+    # YOUR FIX: Check for duplicates before joining
+    print(f"🔍 Integrity Check - Duplicates found:")
+    print(f"   Demographics: {df_demo['SEQN'].duplicated().sum()}")
+    print(f"   Examination:  {df_exam['SEQN'].duplicated().sum()}")
+    print(f"   Laboratory:   {df_lab['SEQN'].duplicated().sum()}")
+
+    # If there were duplicates, we would add: df_demo = df_demo.drop_duplicates(subset='SEQN') here.
+
     print("🔗 Step 3: Joining patient fragments using SQL...")
-    # DuckDB will look at the DataFrames in your RAM and join them
     join_query = """
     INSERT INTO raw_patient_data
     SELECT 
@@ -41,9 +44,8 @@ def load_to_duckdb():
     """
     
     con.execute(join_query)
-    
     count = con.execute("SELECT count(*) FROM raw_patient_data").fetchone()[0]
-    print(f"✅ Success! BioCascade DB is ready with {count} adult patients.")
+    print(f"✅ Success! BioCascade DB updated with {count} adult patients.")
 
 if __name__ == "__main__":
     load_to_duckdb()
