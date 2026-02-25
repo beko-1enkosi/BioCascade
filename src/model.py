@@ -18,7 +18,6 @@ def train_biocascade_model():
     features = [
         'age',
         'diastolic_bp',
-        'triglycerides',
         'log_triglycerides'
     ]
     
@@ -30,6 +29,7 @@ def train_biocascade_model():
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
+    X_test.to_csv("data/processed/X_test.csv", index=False)
     # 4. Build Pipeline
     # While RF doesn't strictly need scaling, we keep it for pipeline consistency
     pipeline = Pipeline([
