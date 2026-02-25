@@ -1,16 +1,28 @@
 import duckdb
 
 def label_data():
+    """
+    Applies clinical proxy definitions to patients in the DuckDB database.
+
+    This function executes the SQL-based labeling logic to categorize patients 
+    into 'High Risk' (BioCascade phenotype) or 'Low Risk' based on vascular, 
+    metabolic, and renal thresholds. It also outputs a distribution summary 
+    of the resulting classes.
+
+    Clinical Triad Thresholds (defined in SQL):
+        - Vascular: Systolic BP > 140 mmHg
+        - Metabolic: HbA1c >= 6.5%
+        - Renal: Sex-aware Creatinine (M > 1.3, F > 1.1 mg/dL)
+    """
+
     db_path = 'data/processed/biocascade.db'
     con = duckdb.connect(db_path)
 
     print("🩺 Step 1: Running Clinical Labeling Logic...")
     
-    # Read and execute the SQL file we just created
     with open('sql/label_definition.sql', 'r') as f:
         con.execute(f.read())
 
-    # Step 2: Get a summary of the results
     stats = con.execute("""
         SELECT 
             is_high_risk, 

@@ -3,11 +3,22 @@ import duckdb
 import os
 
 def load_to_duckdb():
+    """
+    Ingests raw NHANES CSV data into a structured DuckDB relational database.
+
+    This function performs the initial ETL (Extract, Transform, Load) process:
+    1. Initializes the database schema.
+    2. Loads Demographic, Examination, and Laboratory CSV files.
+    3. Performs an integrity check for duplicate patient identifiers (SEQN).
+    4. Executes a SQL-based join to unify patient fragments.
+    5. Filters for adult participants (Age >= 18) to ensure clinical relevance.
+    """
+
     db_path = 'data/processed/biocascade.db'
     con = duckdb.connect(db_path)
     
     print("🔨 Step 1: Building the database tables from schema...")
-    # We use a 'DROP TABLE' first to ensure we don't get Primary Key errors on re-run
+
     con.execute("DROP TABLE IF EXISTS raw_patient_data")
     with open('sql/schema.sql', 'r') as f:
         con.execute(f.read())
@@ -17,13 +28,11 @@ def load_to_duckdb():
     df_exam = pd.read_csv('data/raw/examination.csv')
     df_lab = pd.read_csv('data/raw/laboratory.csv')
 
-    # YOUR FIX: Check for duplicates before joining
     print(f"🔍 Integrity Check - Duplicates found:")
     print(f"   Demographics: {df_demo['SEQN'].duplicated().sum()}")
     print(f"   Examination:  {df_exam['SEQN'].duplicated().sum()}")
     print(f"   Laboratory:   {df_lab['SEQN'].duplicated().sum()}")
 
-    # If there were duplicates, we would add: df_demo = df_demo.drop_duplicates(subset='SEQN') here.
 
     print("🔗 Step 3: Joining patient fragments using SQL...")
     join_query = """
