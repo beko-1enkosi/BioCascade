@@ -35,17 +35,61 @@ def load_to_duckdb():
 
 
     print("🔗 Step 3: Joining patient fragments using SQL...")
+    # EXPANDED QUERY - Use 30+ features instead of 7
     join_query = """
     INSERT INTO raw_patient_data
     SELECT 
         d.SEQN,
+        
+        -- DEMOGRAPHICS
         d.RIDAGEYR as age,
         d.RIAGENDR as gender,
+        d.RIDRETH3 as race_ethnicity,
+        
+        -- BLOOD PRESSURE
         e.BPXSY1 as systolic_bp,
         e.BPXDI1 as diastolic_bp,
+        
+        -- ANTHROPOMETRICS
+        e.BMXBMI as bmi,
+        e.BMXWAIST as waist_cm,
+        e.BMXHT as height_cm,
+        e.BMXWT as weight_kg,
+        
+        -- GLUCOSE METABOLISM
         l.LBXGH as hba1c,
-        l.LBXSTR as triglycerides,
-        l.LBXSCK as serum_creatinine
+        l.LBXGLU as fasting_glucose,
+        
+        -- LIPIDS (CRITICAL FOR METABOLIC SYNDROME!)
+        l.LBXTR as triglycerides,      
+        l.LBXTC as total_cholesterol,
+        l.LBDHDD as hdl_cholesterol,   
+        l.LBDLDL as ldl_cholesterol,
+        
+        -- RENAL FUNCTION
+        l.LBXSCR as serum_creatinine,
+        l.LBXSBU as bun,
+        l.LBXSUA as uric_acid,
+        
+        -- ELECTROLYTES
+        l.LBXSNASI as sodium,
+        l.LBXSKSI as potassium,
+        
+        -- INFLAMMATORY MARKERS
+        l.LBXHSCRP as hscrp,
+        
+        -- HEMATOLOGY
+        l.LBXHGB as hemoglobin,
+        l.LBXHCT as hematocrit,
+        l.LBXRDW as rdw,
+        l.LBXWBCSI as wbc_count,
+        l.LBXLYPCT as lymphocyte_pct,
+        l.LBXNEPCT as neutrophil_pct,
+        
+        -- IRON
+        l.LBXFER as ferritin,
+        l.LBXIRN as serum_iron
+        
     FROM df_demo d
     JOIN df_exam e ON d.SEQN = e.SEQN
     JOIN df_lab l ON d.SEQN = l.SEQN
