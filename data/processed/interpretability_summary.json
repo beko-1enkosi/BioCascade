@@ -1,0 +1,22 @@
+{
+  "Dataset": {
+    "Total Patients": 915,
+    "High Risk": "72 (7.9%)",
+    "Features (Model A)": 31,
+    "Features (Model B)": 21
+  },
+  "Model A Performance": {
+    "ROC-AUC": "0.998",
+    "Top Feature": "hba1c",
+    "Top Feature SHAP": "0.0887",
+    "2nd Feature": "vasc_metabolic_load",
+    "2nd Feature SHAP": "0.0856"
+  },
+  "Model B Performance": {
+    "ROC-AUC": "0.821",
+    "Top Feature": "age",
+    "Top Feature SHAP": "0.1542",
+    "2nd Feature": "uric_acid",
+    "2nd Feature SHAP": "0.0364"
+  }
+}
