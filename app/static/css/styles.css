@@ -1,0 +1,161 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #06090F; 
+    color: #E5E7EB;
+    overflow-x: hidden;
+}
+
+#background-layer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#dna-svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+}
+
+.dna-rung {
+    stroke: #00E5FF; 
+    stroke-width: 2;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px #00E5FF);
+}
+
+.dna-rung.purple {
+    stroke: #7C3AED;
+    filter: drop-shadow(0 0 3px #7C3AED);
+    opacity: 0.5;
+}
+
+.dna-rung.gold {
+    stroke: #F59E0B;
+    filter: drop-shadow(0 0 8px #F59E0B);
+}
+
+
+/* Existing Cyan Strand */
+.dna-rung.cyan {
+    stroke: #00E5FF;
+    filter: drop-shadow(0 0 5px #00E5FF);
+}
+
+/* New Purple Strand */
+.dna-rung.purple {
+    stroke: #7C3AED;
+    filter: drop-shadow(0 0 5px #7C3AED);
+}
+
+/* New Gold Strand */
+.dna-rung.gold {
+    stroke: #F59E0B;
+    filter: drop-shadow(0 0 5px #F59E0B);
+}
+
+/* NAVBAR: The Floating Cockpit */
+.navbar {
+    position: fixed;
+    top: 20px; /* Floating from the top */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1200px;
+    height: 65px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2.5rem;
+    
+    /* High-End Glassmorphism */
+    backdrop-filter: blur(15px) saturate(150%);
+    -webkit-backdrop-filter: blur(15px) saturate(150%);
+    background: rgba(11, 15, 26, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px; /* Capsule shape */
+    
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Shrink effect on scroll */
+.navbar.scrolled {
+    top: 10px;
+    height: 55px;
+    width: 80%;
+    background: rgba(6, 9, 15, 0.9);
+}
+
+.nav-left {
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    color: #f1f5f9;
+    cursor: default;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-right a {
+    margin-left: 1.5rem;
+    text-decoration: none;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: 0.3s ease;
+}
+
+/* Active Section Indicator */
+.nav-right a.active {
+    color: #00E5FF;
+}
+
+.nav-right a:hover {
+    color: #f1f5f9;
+}
+
+/* The "Sponsor" Button Polish */
+.sponsor-btn {
+    margin-left: 2rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #00E5FF, #7C3AED);
+    color: #06090F !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.sponsor-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+/* Section Layout */
+.section-content {
+    max-width: 800px;
+    text-align: center;
+}
+
+.panel {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 70px;
+}
