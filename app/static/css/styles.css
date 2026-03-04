@@ -1,3 +1,7 @@
+/* ==========================================================================
+   1. CORE SETUP & BASE COLORS
+   ========================================================================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -6,10 +10,15 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #06090F; 
+    /* Lighter Clinical Dark (Slate Navy) */
+    background: #0f172a; 
     color: #E5E7EB;
     overflow-x: hidden;
 }
+
+/* ==========================================================================
+   2. BACKGROUND LAYER & DNA STRANDS
+   ========================================================================== */
 
 #background-layer {
     position: fixed;
@@ -17,128 +26,142 @@ body {
     width: 100%; height: 100vh;
     z-index: -1;
     overflow: hidden;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
 }
 
 #dna-svg {
     width: 100%;
     height: 100%;
-    opacity: 0.6;
+    /* Ensure it's visible but doesn't distract from text */
+    opacity: 0.7; 
+    display: block;
 }
 
 .dna-rung {
-    stroke: #00E5FF; 
-    stroke-width: 2;
+    /* Important: Ensure stroke-width is set here */
+    stroke-width: 3;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 5px #00E5FF);
+    /* This ensures they show up even before JS moves them */
+    opacity: 1 !important; 
 }
 
-.dna-rung.purple {
-    stroke: #7C3AED;
-    filter: drop-shadow(0 0 3px #7C3AED);
-    opacity: 0.5;
-}
-
-.dna-rung.gold {
-    stroke: #F59E0B;
-    filter: drop-shadow(0 0 8px #F59E0B);
-}
-
-
-/* Existing Cyan Strand */
 .dna-rung.cyan {
     stroke: #00E5FF;
-    filter: drop-shadow(0 0 5px #00E5FF);
+    filter: drop-shadow(0 0 6px rgba(0,229,255,0.6));
 }
 
-/* New Purple Strand */
 .dna-rung.purple {
     stroke: #7C3AED;
-    filter: drop-shadow(0 0 5px #7C3AED);
+    filter: drop-shadow(0 0 5px rgba(124,58,237,0.5));
 }
 
-/* New Gold Strand */
 .dna-rung.gold {
     stroke: #F59E0B;
-    filter: drop-shadow(0 0 5px #F59E0B);
+    filter: drop-shadow(0 0 7px rgba(245,158,11,0.6));
 }
 
-/* NAVBAR: The Floating Cockpit */
+/* ==========================================================================
+   3. NAVBAR: Balanced Capsule Design
+   ========================================================================== */
+
 .navbar {
     position: fixed;
-    top: 20px; /* Floating from the top */
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
     max-width: 1200px;
     height: 65px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0 2.5rem;
+    padding: 0 2rem;
     
     /* High-End Glassmorphism */
     backdrop-filter: blur(15px) saturate(150%);
     -webkit-backdrop-filter: blur(15px) saturate(150%);
-    background: rgba(11, 15, 26, 0.7);
+    background: rgba(15, 23, 42, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 100px; /* Capsule shape */
-    
+    border-radius: 100px;
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* Shrink effect on scroll */
+/* Shrink effect when scrolling down */
 .navbar.scrolled {
     top: 10px;
     height: 55px;
-    width: 80%;
-    background: rgba(6, 9, 15, 0.9);
+    width: 85%;
+    background: rgba(11, 15, 26, 0.95);
 }
 
+/* Left Section: Branding */
 .nav-left {
+    flex: 0 0 180px; 
     font-weight: 800;
     font-size: 1.1rem;
-    letter-spacing: 1px;
     color: #f1f5f9;
     cursor: default;
 }
 
-.nav-right {
+/* Center Section: Links */
+.nav-center {
+    flex: 1;
     display: flex;
-    align-items: center;
+    justify-content: center;
+    gap: 2rem;
 }
 
-.nav-right a {
-    margin-left: 1.5rem;
+.nav-center a {
     text-decoration: none;
     color: #94a3b8;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    position: relative;
     transition: 0.3s ease;
 }
 
-/* Active Section Indicator */
-.nav-right a.active {
+.nav-center a:hover, 
+.nav-center a.active {
     color: #00E5FF;
 }
 
-.nav-right a:hover {
-    color: #f1f5f9;
+/* Right Section: Actions */
+.nav-right {
+    flex: 0 0 180px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-/* The "Sponsor" Button Polish */
+.nav-link-git {
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 1.4rem; 
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.nav-link-git:hover {
+    color: #00E5FF; 
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+}
+
+/* Sponsor Button */
 .sponsor-btn {
-    margin-left: 2rem;
-    padding: 0.6rem 1.5rem;
+    padding: 0.6rem 1.4rem;
     border-radius: 50px;
     background: linear-gradient(135deg, #00E5FF, #7C3AED);
     color: #06090F !important;
-    font-size: 0.8rem !important;
+    font-size: 0.75rem !important;
     font-weight: 700 !important;
+    text-decoration: none;
     box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .sponsor-btn:hover {
@@ -146,11 +169,40 @@ body {
     box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
 }
 
-/* Section Layout */
-.section-content {
-    max-width: 800px;
-    text-align: center;
+/* Button Shimmer Effect */
+.primary-btn {
+    position: relative;
+    overflow: hidden;
+    padding: 1.2rem 2.8rem;
+    border-radius: 100px;
+    background: linear-gradient(135deg, #00e5ff, #7c3aed);
+    color: #0f172a;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 229, 255, 0.2);
 }
+
+.primary-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(30deg);
+    transition: none;
+}
+
+.primary-btn:hover::after {
+    left: 120%;
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* ==========================================================================
+   4. SECTION LAYOUT & PANELS
+   ========================================================================== */
 
 .panel {
     height: 100vh;
@@ -158,4 +210,112 @@ body {
     align-items: center;
     justify-content: center;
     padding-top: 70px;
+}
+
+.section-content {
+    max-width: 800px;
+    text-align: center;
+    padding: 3rem;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   5. BIOCASCADE HERO STYLES
+   ========================================================================== */
+
+.hero-container {
+    max-width: 1000px;
+    z-index: 2;
+    text-align: center;
+}
+
+.hackathon-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tag-line {
+    width: 40px;
+    height: 1px;
+    background: #00E5FF;
+}
+
+.tag-text {
+    font-family: 'Monaco', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: #94A3B8;
+}
+
+.title-wrapper {
+    overflow: hidden; 
+    margin-bottom: 1rem;
+}
+
+.main-title {
+    font-size: clamp(4rem, 15vw, 9rem); 
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -5px;
+    background: linear-gradient(to bottom, #ffffff 50%, #64748b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: translateY(110%); /* Start state for GSAP */
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    color: #94A3B8;
+    max-width: 550px;
+    margin: 1.5rem auto 3rem;
+    line-height: 1.6;
+    opacity: 0; /* Start state for GSAP */
+}
+
+.text-glow { 
+    color: #00E5FF; 
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.3); 
+}
+
+/* Scroll Indicator (Bottom of Hero) */
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0; /* Start state for GSAP */
+}
+
+.mouse {
+    width: 22px;
+    height: 35px;
+    border: 2px solid #334155;
+    border-radius: 20px;
+    position: relative;
+}
+
+.wheel {
+    width: 2px;
+    height: 6px;
+    background: #00E5FF;
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: scroll-wheel 2s infinite;
+}
+
+@keyframes scroll-wheel {
+    0% { top: 6px; opacity: 1; }
+    100% { top: 20px; opacity: 0; }
 }
