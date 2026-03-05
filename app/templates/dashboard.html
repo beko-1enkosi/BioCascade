@@ -53,47 +53,85 @@
                     <button class="primary-btn">Launch Screening</button>
                 </div>
             </div>
-            
-            <div class="scroll-indicator">
-                <div class="mouse"><div class="wheel"></div></div>
-                <div class="scroll-text">SCROLL TO DECODE</div>
-            </div>
         </section>
 
         <section id="about" class="panel about">
             <div class="about-container">
 
                 <div class="about-left">
-                    <h2 class="section-title">The Cascade Hypothesis</h2>
+                    <div class="hackathon-tag">
+                        <span class="tag-line"></span>
+                        <span class="tag-text">GLOBAL URGENCY</span>
+                    </div>
+                    <h2 class="section-title">The Silent Epidemic</h2>
+                    
                     <p class="about-text">
-                        Biological systems rarely fail in isolation.
-                        Small disturbances in metabolism, vascular pressure,
-                        and renal filtration can interact and amplify each other.
+                        Cardiovascular disease remains the #1 cause of death globally. 
+                        Our research focuses on <strong>HFpEF</strong> (Heart Failure with preserved Ejection Fraction), a condition where the heart pumps normally but fails to meet metabolic demands.
                     </p>
 
+                    <div class="impact-counter">
+                        <div class="counter-number" id="death-counter">0</div>
+                        <div class="counter-label">Global Cardiovascular Fatalities <br><span>(Since you arrived)</span></div>
+                    </div>
+
                     <p class="about-text-highlight">
-                        Instead of predicting a single disease,
-                        the model detects systemic risk cascades.
+                        BioCascade democratizes clinical intelligence by mapping 
+                        HFpEF risk through de-identified biomedical datasets.
                     </p>
                 </div>
 
                 <div class="about-right">
                     <div class="cascade-diagram">
+                        <div class="diag-label">SYSTEMIC INTERACTION MAP</div>
                         <div class="cascade-node">Metabolic Stress</div>
                         <div class="cascade-arrow">↓</div>
                         <div class="cascade-node">Vascular Load</div>
                         <div class="cascade-arrow">↓</div>
                         <div class="cascade-node">Renal Response</div>
                         <div class="cascade-arrow">↓</div>
-                        <div class="cascade-node final">Cascade Amplificatiob</div>
+                        <div class="cascade-node final">HFpEF Cascade Detection</div>
                     </div>
                 </div>
 
             </div>    
         </section>
 
-        <section id="model" class="panel model"></section>
-        <section id="screening" class="panel screening"></section>
+        <section id="model" class="panel model">
+            <div class="model-container">
+                <div class="model-header">
+                    <div class="hackathon-tag">
+                        <span class="tag-line"></span>
+                        <span class="tag-text">ARCHITECTURE</span>
+                    </div>
+                    <h2 class="section-title">The Interpretability Engine</h2>
+                </div>
+
+                <div class="pipeline-flow">
+                    <div class="step-card">
+                        <div class="step-icon"><i class="bi bi-database-fill-gear"></i></div>
+                        <h4>De-Identified Data</h4>
+                        <p>Ingesting multi-modal patient datasets (biomarkers, vitals, history).</p>
+                    </div>
+
+                    <div class="pipeline-connector"><i class="bi bi-chevron-right"></i></div>
+
+                    <div class="step-card active-glow">
+                        <div class="step-icon"><i class="bi bi-cpu-fill"></i></div>
+                        <h4>Cascade Modeling</h4>
+                        <p>Analyzing cross-system correlations to detect emerging HFpEF patterns.</p>
+                    </div>
+
+                    <div class="pipeline-connector"><i class="bi bi-chevron-right"></i></div>
+
+                    <div class="step-card">
+                        <div class="step-icon"><i class="bi bi-eye-fill"></i></div>
+                        <h4>Interpretable Risk</h4>
+                        <p>Generating a risk score with specific "System Stress" explainability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
            
         
         </main>

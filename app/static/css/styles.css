@@ -8,6 +8,14 @@
     box-sizing: border-box;
 }
 
+strong {
+    color: #ffffff;
+    background: rgba(0, 229, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     /* Lighter Clinical Dark (Slate Navy) */
@@ -27,20 +35,19 @@ body {
     z-index: -1;
     overflow: hidden;
     background: radial-gradient(circle at center, #0d131d 0%, #0e1527 100%);
-    /* THE BLUR EFFECT */
-    filter: blur(3px); /* Adjust this number (2px to 6px) to find your 'sweet spot' */
-    transform: scale(1.05); /* Prevents 'blurry edges' at the corners */
-    
-    /* Smooth transition if we decide to animate the blur later */
+    filter: blur(3px); 
+    transform: scale(1.05); 
     transition: filter 0.5s ease;
 }
 
 #dna-svg {
-    width: 100%;
-    height: 100%;
-    /* Ensure it's visible but doesn't distract from text */
+    width: 100vw;
+    height: 100vh;
     opacity: 0.7; 
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .dna-rung {
@@ -207,25 +214,35 @@ body {
 }
 
 /* ==========================================================================
-   4. SECTION LAYOUT & PANELS
+   4. SECTION LAYOUT & PANELS (FIXED)
    ========================================================================== */
 
 .panel {
-    height: 100vh;
+    width: 100%;
     display: flex;
+    flex-direction: column; 
     align-items: center;
-    justify-content: center;
-    padding-top: 70px;
+    position: relative;
 }
 
-.section-content {
-    max-width: 800px;
-    text-align: center;
-    padding: 1rem;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(12px);
-    border-radius: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+.panel.hero {
+    height: 100vh;
+    justify-content: center;
+    padding: 0;
+}
+
+.panel.about, .panel.model {
+    padding: 60px 0;
+    min-height: auto; 
+}
+
+#about {
+    margin-top: -5vh;
+}
+
+.about-container, .model-container {
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 /* ==========================================================================
@@ -300,59 +317,21 @@ body {
     text-shadow: 0 0 20px rgba(0, 229, 255, 0.6); 
 }
 
-/* Scroll Indicator (Bottom of Hero) */
-.scroll-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    opacity: 0; /* Start state for GSAP */
-}
-
-.mouse {
-    width: 22px;
-    height: 35px;
-    border: 2px solid #334155;
-    border-radius: 20px;
-    position: relative;
-}
-
-.wheel {
-    width: 2px;
-    height: 6px;
-    background: #00E5FF;
-    position: absolute;
-    top: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: scroll-wheel 2s infinite;
-}
-
-@keyframes scroll-wheel {
-    0% { top: 6px; opacity: 1; }
-    100% { top: 20px; opacity: 0; }
-}
 
 /* ==========================================================
    ABOUT SECTION
    ========================================================== */
 
 .about-container {
-
-    width: 100%;
-    max-width: 1200px;
-
+    width: 95%;         
+    max-width: 1600px;    
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-
+    grid-template-columns: 1fr 1.2fr; 
+    column-gap: 10vw;    
     align-items: center;
-
-    padding: 40px;
+    padding: 0 4vw;     
+    margin-top: 20px;
 }
 
 /* LEFT TEXT */
@@ -368,40 +347,60 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+.about-left {
+    justify-self: start;
+    text-align: left;
+    max-width: 600px;     
+}
+
 .about-text {
 
-    color: #94A3B8;
+    color: rgb(202, 212, 230);
     line-height: 1.8;
     font-size: 1.05rem;
     margin-bottom: 18px;
     max-width: 520px;
 }
 
-.about-text.highlight {
-    color: #b7cbe4;
-    font-weight: 500;
-    font-weight: bold;
+.about-text-highlight {
+    color: #f1f5f9; /* Brighter white for contrast */
+    font-weight: 600;
+    line-height: 1.8;
+    margin-top: 20px;
+    border-left: 2px solid #00E5FF;
+    padding-left: 15px;
 }
 
 /* RIGHT CASCADE DIAGRAM */
+
+.about-right {
+    justify-self: end;
+    display: flex;
+    justify-content: flex-end; 
+    width: 100%;
+}
 
 .cascade-diagram {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 12px;
+    width: fit-content; 
 }
 
 .cascade-node {
-
+    position: relative;
+    overflow: hidden;
     padding: 14px 26px;
     border-radius: 999px;
-    background: rgba(15,23,42,0.8);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: #CBD5E1;
+    background: rgba(21, 30, 44, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #dfedff;
     font-size: 0.9rem;
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    z-index: 5;
+    opacity: 0;
 }
 
 .cascade-node:hover {
@@ -417,6 +416,118 @@ body {
 }
 
 .cascade-arrow {
-    color: #64748B;
+    color: #444f5e;
     font-size: 1.2rem;
+    line-height: 1;
+    margin: -4px 0; /* Tightens the vertical flow */
+}
+
+.cascade-node::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: 0.5s;
+}
+
+.cascade-node:hover::before {
+    left: 100%;
+    transition: 0.5s;
+}
+
+.impact-counter {
+    margin: 40px 0;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    border-left: 6px solid #ff3333; 
+    backdrop-filter: blur(5px);
+}
+
+.counter-number {
+    font-family: 'Monaco', monospace;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #ef4444; 
+    min-width: 120px;
+}
+
+.counter-label {
+    font-size: 0.9rem;
+    color: #b7cbe6;
+    line-height: 1.4;
+}
+
+.counter-label span {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+.diag-label {
+    font-family: 'Monaco', monospace;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    color: #00E5FF;
+    margin-bottom: 10px;
+}
+
+/* ==========================================================
+   MODEL SECTION
+   ========================================================== */
+
+.model-container {
+    margin-top: -40px;
+    width: 95%;
+    max-width: 1450px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pipeline-flow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+    gap: 20px;
+}
+
+.step-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 40px 30px;
+    border-radius: 24px;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+}
+
+.step-card h4 {
+    color: #ffffff;
+    margin: 20px 0 10px;
+    font-size: 1.2rem;
+}
+
+.step-card p {
+    color: #94A3B8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.step-icon {
+    font-size: 2.5rem;
+    color: #00E5FF;
+}
+
+.pipeline-connector {
+    color: #1e293b;
+    font-size: 2rem;
+}
+
+.active-glow {
+    border-color: #7C3AED;
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
 }

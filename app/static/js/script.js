@@ -70,7 +70,7 @@ const dnaTl = gsap.timeline({
         trigger: document.body,
         start: "top top",
         end: "bottom bottom",
-        scrub: 1.5
+        scrub: 1
     }
 
 });
@@ -270,22 +270,70 @@ gsap.to("#dna-svg", {
 
 });
 
-// /**
-//  * ABOUT SECTION CASCADE ANIMATION
-//  */
+/**
+ * ABOUT SECTION CASCADE ANIMATION
+ */
+const aboutTl = gsap.timeline({
+    scrollTrigger: {
+        trigger: ".about-container", // Trigger based on the whole container
+        start: "top 80%", 
+        toggleActions: "play none none none" // Ensures it plays once when reached
+    }
+});
 
-// gsap.from(".cascade-node", {
+// Reset them to hidden before the animation starts to avoid "flashing"
+gsap.set(".cascade-node, .about-left, .cascade-arrow", { opacity: 0, y: 30 });
 
-//     scrollTrigger: {
-//         trigger: "#about",
-//         start: "top 70%"
-//     },
+aboutTl
+    .to(".about-left", { 
+        opacity: 1, 
+        y: 0, 
+        duration: 1, 
+        ease: "power3.out" 
+    })
+    .to(".cascade-node", { 
+        opacity: 1, 
+        y: 0, 
+        stagger: 0.2, 
+        duration: 0.6, 
+        ease: "power2.out" 
+    }, "-=0.5") // Starts slightly before the text finish
+    .to(".cascade-arrow", { 
+        opacity: 1, 
+        y: 0, 
+        stagger: 0.2, 
+        duration: 0.4 
+    }, "-=0.8");
 
-//     opacity: 0,
-//     y: 40,
-//     stagger: 0.25,
-//     duration: 1.2,
-//     ease: "power3.out"
-    
-// });
+// Pulsing Arrows (Independent of the reveal)
+gsap.to(".cascade-arrow", {
+    y: 5,
+    duration: 1,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    stagger: 0.2
+});
+
+// CVD Death Counter Logic
+let count = 0;
+const counterElement = document.getElementById('death-counter');
+
+// This triggers when the user scrolls to the "About" section
+ScrollTrigger.create({
+    trigger: "#about",
+    start: "top 80%",
+    onEnter: () => {
+        setInterval(() => {
+            count++;
+            counterElement.innerText = count.toLocaleString();
+            
+            // Subtle "red pulse" on the number when it changes
+            gsap.fromTo("#death-counter", 
+                { scale: 1.1, color: "#ffffff" }, 
+                { scale: 1, color: "#ef4444", duration: 0.4 }
+            );
+        }, 1700); // Increases by 1 every 1.7 seconds
+    }
+});
 
