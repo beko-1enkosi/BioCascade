@@ -269,3 +269,23 @@ gsap.to("#dna-svg", {
     transformOrigin: "center center"
 
 });
+
+// /**
+//  * ABOUT SECTION CASCADE ANIMATION
+//  */
+
+// gsap.from(".cascade-node", {
+
+//     scrollTrigger: {
+//         trigger: "#about",
+//         start: "top 70%"
+//     },
+
+//     opacity: 0,
+//     y: 40,
+//     stagger: 0.25,
+//     duration: 1.2,
+//     ease: "power3.out"
+    
+// });
+
