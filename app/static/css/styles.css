@@ -18,7 +18,6 @@ strong {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    /* Lighter Clinical Dark (Slate Navy) */
     background: #0f172a; 
     color: #E5E7EB;
     overflow-x: hidden;
@@ -34,7 +33,7 @@ body {
     width: 100%; height: 100vh;
     z-index: -1;
     overflow: hidden;
-    background: radial-gradient(circle at center, #0d131d 0%, #0e1527 100%);
+    background: radial-gradient(circle at center, #080b11 0%, #080d17 100%);
     filter: blur(3px); 
     transform: scale(1.05); 
     transition: filter 0.5s ease;
@@ -51,30 +50,17 @@ body {
 }
 
 .dna-rung {
-    /* Important: Ensure stroke-width is set here */
     stroke-width: 5;
     stroke-linecap: round;
-    /* This ensures they show up even before JS moves them */
     opacity: 1 !important; 
 }
 
-.dna-rung.cyan {
-    stroke: #00E5FF;
-    filter: drop-shadow(0 0 6px rgba(0,229,255,0.6));
-}
-
-.dna-rung.purple {
-    stroke: #7C3AED;
-    filter: drop-shadow(0 0 5px rgba(124,58,237,0.5));
-}
-
-.dna-rung.gold {
-    stroke: #F59E0B;
-    filter: drop-shadow(0 0 7px rgba(245,158,11,0.6));
-}
+.dna-rung.cyan { stroke: #00E5FF; filter: drop-shadow(0 0 6px rgba(0,229,255,0.6)); }
+.dna-rung.purple { stroke: #7C3AED; filter: drop-shadow(0 0 5px rgba(124,58,237,0.5)); }
+.dna-rung.gold { stroke: #F59E0B; filter: drop-shadow(0 0 7px rgba(245,158,11,0.6)); }
 
 /* ==========================================================================
-   3. NAVBAR: Balanced Capsule Design
+   3. NAVBAR
    ========================================================================== */
 
 .navbar {
@@ -88,10 +74,7 @@ body {
     display: flex;
     align-items: center;
     padding: 0 2rem;
-    
-    /* High-End Glassmorphism */
     backdrop-filter: blur(15px) saturate(150%);
-    -webkit-backdrop-filter: blur(15px) saturate(150%);
     background: rgba(15, 23, 42, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 100px;
@@ -99,7 +82,6 @@ body {
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* Shrink effect when scrolling down */
 .navbar.scrolled {
     top: 10px;
     height: 55px;
@@ -107,23 +89,8 @@ body {
     background: rgba(11, 15, 26, 0.95);
 }
 
-/* Left Section: Branding */
-.nav-left {
-    flex: 0 0 180px; 
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: #f1f5f9;
-    cursor: default;
-}
-
-/* Center Section: Links */
-.nav-center {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-}
-
+.nav-left { flex: 0 0 180px; font-weight: 800; font-size: 1.1rem; color: #f1f5f9; }
+.nav-center { flex: 1; display: flex; justify-content: center; gap: 2rem; }
 .nav-center a {
     text-decoration: none;
     color: #94a3b8;
@@ -131,40 +98,14 @@ body {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    position: relative;
     transition: 0.3s ease;
 }
+.nav-center a:hover, .nav-center a.active { color: #00E5FF; }
 
-.nav-center a:hover, 
-.nav-center a.active {
-    color: #00E5FF;
-}
+.nav-right { flex: 0 0 180px; display: flex; justify-content: flex-end; gap: 1.5rem; }
+.nav-link-git { color: #94a3b8; font-size: 1.4rem; transition: 0.3s ease; text-decoration: none; }
+.nav-link-git:hover { color: #00E5FF; transform: scale(1.1); }
 
-/* Right Section: Actions */
-.nav-right {
-    flex: 0 0 180px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.nav-link-git {
-    text-decoration: none;
-    color: #94a3b8;
-    font-size: 1.4rem; 
-    display: flex;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-
-.nav-link-git:hover {
-    color: #00E5FF; 
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
-}
-
-/* Sponsor Button */
 .sponsor-btn {
     padding: 0.6rem 1.4rem;
     border-radius: 50px;
@@ -174,15 +115,82 @@ body {
     font-weight: 700 !important;
     text-decoration: none;
     box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.sponsor-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+/* ==========================================================================
+   4. SECTION LAYOUT & PANELS (RE-OPTIMIZED)
+   ========================================================================== */
+
+.panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    position: relative;
+    padding: 80px 0; /* Uniform spacing between sections */
 }
 
-/* Button Shimmer Effect */
+.panel.hero {
+    height: 100vh;
+    justify-content: center;
+    padding: 0;
+}
+
+.panel.about, .panel.model, .panel.screening {
+    min-height: auto;
+}
+
+.about-container, .model-container, .screening-container {
+    width: 95%;
+    max-width: 1400px;
+    padding: 40px 20px;
+}
+
+/* ==========================================================================
+   5. HERO STYLES
+   ========================================================================== */
+
+.hero-container { max-width: 1000px; z-index: 2; text-align: center; }
+
+.hackathon-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding: 6px 16px;
+    background: rgba(15, 23, 44, 0.4);
+    backdrop-filter: blur(15px);
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tag-line { width: 40px; height: 1px; background: #00E5FF; }
+.tag-text { font-family: 'Monaco', monospace; font-size: 0.7rem; letter-spacing: 3px; color: #f1f5f9; font-weight: 800; }
+
+.main-title {
+    font-size: clamp(4rem, 15vw, 9rem); 
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -5px;
+    background: linear-gradient(to bottom, #ffffff 50%, #64748b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: translateY(110%);
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    color: #CBD5E1;
+    max-width: 550px;
+    margin: 1.5rem auto 3rem;
+    line-height: 1.6;
+    opacity: 0; 
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.text-glow { color: #00E5FF; font-weight: 600; text-shadow: 0 0 20px rgba(0, 229, 255, 0.6); }
+
 .primary-btn {
     position: relative;
     overflow: hidden;
@@ -196,359 +204,80 @@ body {
     box-shadow: 0 10px 20px rgba(0, 229, 255, 0.2);
 }
 
-.primary-btn::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -60%;
-    width: 20%;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.4);
-    transform: rotate(30deg);
-    transition: none;
-}
-
-.primary-btn:hover::after {
-    left: 120%;
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
 /* ==========================================================================
-   4. SECTION LAYOUT & PANELS (FIXED)
+   6. ABOUT & CASCADE DIAGRAM
    ========================================================================== */
-
-.panel {
-    width: 100%;
-    display: flex;
-    flex-direction: column; 
-    align-items: center;
-    position: relative;
-}
-
-.panel.hero {
-    height: 100vh;
-    justify-content: center;
-    padding: 0;
-}
-
-.panel.about, .panel.model {
-    padding: 60px 0;
-    min-height: auto; 
-}
-
-#about {
-    margin-top: -5vh;
-}
-
-.about-container, .model-container {
-    padding-top: 40px;
-    padding-bottom: 40px;
-}
-
-/* ==========================================================================
-   5. BIOCASCADE HERO STYLES
-   ========================================================================== */
-
-.hero-container {
-    max-width: 1000px;
-    z-index: 2;
-    text-align: center;
-}
-
-.hackathon-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 25px;
-    padding: 6px 16px;
-    background: rgba(15, 23, 44, 0.4); /* Slight "pocket" of darkness */
-    backdrop-filter: blur(4px); /* Softens the DNA lines behind it */
-    border-radius: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.tag-line {
-    width: 40px;
-    height: 1px;
-    background: #00E5FF;
-}
-
-.tag-text {
-    font-family: 'Monaco', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 3px;
-    color: #f1f5f9; /* Shifted to white for better legibility */
-    font-weight: 500;
-}
-
-.title-wrapper {
-    overflow: hidden; 
-    margin-bottom: 1rem;
-}
-
-.main-title {
-    font-size: clamp(4rem, 15vw, 9rem); 
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -5px;
-    background: linear-gradient(to bottom, #ffffff 50%, #64748b 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transform: translateY(110%); /* Start state for GSAP */
-}
-
-.hero-description {
-    font-size: 1.25rem;
-    color: #CBD5E1; /* Lighter slate for better contrast */
-    max-width: 550px;
-    margin: 1.5rem auto 3rem;
-    line-height: 1.6;
-    opacity: 0; 
-    /* The "Contrast Buffer" shadow: */
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8), 
-                 0 0 2px rgba(0, 0, 0, 1);
-}
-
-.text-glow { 
-    color: #00E5FF; 
-    font-weight: 600;
-    /* Stronger glow to compete with the DNA strands */
-    text-shadow: 0 0 20px rgba(0, 229, 255, 0.6); 
-}
-
-
-/* ==========================================================
-   ABOUT SECTION
-   ========================================================== */
 
 .about-container {
-    width: 95%;         
-    max-width: 1600px;    
-    margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1.2fr; 
-    column-gap: 10vw;    
+    column-gap: 5vw;    
     align-items: center;
-    padding: 0 4vw;     
-    margin-top: 20px;
 }
 
-/* LEFT TEXT */
-
 .section-title {
-
     font-size: 2.8rem;
     font-weight: 800;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     background: linear-gradient(90deg,#00E5FF,#7C3AED);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.about-left {
-    justify-self: start;
-    text-align: left;
-    max-width: 600px;     
-}
-
-.about-text {
-
-    color: rgb(202, 212, 230);
-    line-height: 1.8;
-    font-size: 1.05rem;
-    margin-bottom: 18px;
-    max-width: 520px;
-}
-
-.about-text-highlight {
-    color: #f1f5f9; /* Brighter white for contrast */
-    font-weight: 600;
-    line-height: 1.8;
-    margin-top: 20px;
-    border-left: 2px solid #00E5FF;
-    padding-left: 15px;
-}
-
-/* RIGHT CASCADE DIAGRAM */
-
-.about-right {
-    justify-self: end;
-    display: flex;
-    justify-content: flex-end; 
-    width: 100%;
-}
-
-.cascade-diagram {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    width: fit-content; 
-}
-
-.cascade-node {
-    position: relative;
-    overflow: hidden;
-    padding: 14px 26px;
-    border-radius: 999px;
-    background: rgba(21, 30, 44, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #dfedff;
-    font-size: 0.9rem;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    z-index: 5;
-    opacity: 0;
-}
-
-.cascade-node:hover {
-    border-color: #00E5FF;
-    box-shadow: 0 0 15px rgba(0,229,255,0.3);
-}
-
-.cascade-node.final {
-    border-color: #7C3AED;
-    box-shadow: 0 0 20px rgba(124,58,237,0.35);
-
-    font-weight: 600;
-}
-
-.cascade-arrow {
-    color: #444f5e;
-    font-size: 1.2rem;
-    line-height: 1;
-    margin: -4px 0; /* Tightens the vertical flow */
-}
-
-.cascade-node::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-    transition: 0.5s;
-}
-
-.cascade-node:hover::before {
-    left: 100%;
-    transition: 0.5s;
-}
+.about-text { color: #c3d3e9; line-height: 1.8; font-size: 1.05rem; margin-bottom: 18px; }
 
 .impact-counter {
-    margin: 40px 0;
-    padding: 25px;
+    margin: 30px 0;
+    padding: 20px;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 20px;
     display: flex;
     align-items: center;
-    gap: 25px;
-    border-left: 6px solid #ff3333; 
-    backdrop-filter: blur(5px);
-}
-
-.counter-number {
-    font-family: 'Monaco', monospace;
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #ef4444; 
-    min-width: 120px;
-}
-
-.counter-label {
-    font-size: 0.9rem;
-    color: #b7cbe6;
-    line-height: 1.4;
-}
-
-.counter-label span {
-    font-style: italic;
-    opacity: 0.7;
-}
-
-.diag-label {
-    font-family: 'Monaco', monospace;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    color: #00E5FF;
-    margin-bottom: 10px;
-}
-
-/* ==========================================================
-   MODEL SECTION
-   ========================================================== */
-
-.model-container {
-    margin-top: -40px;
-    width: 95%;
-    max-width: 1450px;
-    text-align: center;
-    margin-top: 20px;
-}
-
-.pipeline-flow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 60px;
     gap: 20px;
+    border-left: 6px solid #ff3333; 
 }
 
+.counter-number { font-family: 'Monaco', monospace; font-size: 3rem; color: #ef4444; min-width: 100px; }
+
+.cascade-diagram { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.diag-label { font-family: 'Monaco', monospace; font-size: 0.8rem; color: #00E5FF; margin-bottom: 10px; }
+.cascade-node {
+    padding: 12px 24px;
+    border-radius: 999px;
+    background: rgba(21, 30, 44, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #dfedff;
+    font-size: 0.85rem;
+    opacity: 0;
+}
+.cascade-node.final { border-color: #7C3AED; box-shadow: 0 0 20px rgba(124,58,237,0.3); }
+.cascade-arrow { color: #888e97; font-size: 1.2rem; }
+
+/* ==========================================================================
+   7. MODEL SECTION
+   ========================================================================== */
+
+.model-container { text-align: center; }
+.pipeline-flow { display: flex; justify-content: space-between; align-items: center; margin-top: 50px; gap: 20px; }
 .step-card {
     flex: 1;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 40px 30px;
+    padding: 35px 25px;
     border-radius: 24px;
     backdrop-filter: blur(10px);
-    transition: all 0.4s ease;
 }
+.step-card h4 { color: #ffffff; margin: 15px 0 10px; }
+.step-icon { font-size: 2.2rem; color: #00E5FF; }
+.active-glow { border-color: #7C3AED; box-shadow: 0 0 30px rgba(124, 58, 237, 0.15); }
 
-.step-card h4 {
-    color: #ffffff;
-    margin: 20px 0 10px;
-    font-size: 1.2rem;
-}
+/* ==========================================================================
+   8. CLINICAL INTERFACE (SCREENING)
+   ========================================================================== */
 
-.step-card p {
-    color: #94A3B8;
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-.step-icon {
-    font-size: 2.5rem;
-    color: #00E5FF;
-}
-
-.pipeline-connector {
-    color: #1e293b;
-    font-size: 2rem;
-}
-
-.active-glow {
-    border-color: #7C3AED;
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
-}
-
-/* ==========================================================
-   CLINICAL INTERFACE
-   ========================================================== */
-
-.screening-container {
-    width: 90%;
-    max-width: 1200px;
-    text-align: center;
-    padding-bottom: 100px;
-}
-
-.interface-preview {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 60px;
-}
+.screening-container { text-align: center; }
+.interface-preview { display: flex; justify-content: center; gap: 25px; margin: 50px 0; }
 
 .preview-card {
     background: rgba(15, 23, 42, 0.8);
@@ -559,69 +288,17 @@ body {
     text-align: left;
 }
 
-.sensor-status {
-    font-size: 0.6rem;
-    color: #00E5FF;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
+.sensor-status { font-size: 0.6rem; color: #00E5FF; display: flex; align-items: center; gap: 5px; }
+.sensor-status::before { content: ''; width: 6px; height: 6px; background: #00E5FF; border-radius: 50%; box-shadow: 0 0 8px #00E5FF; }
 
-.sensor-status::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: #00E5FF;
-    border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 8px #00E5FF;
-}
+.mini-graph { height: 30px; width: 100%; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; position: relative; margin-top: 10px;}
+.mini-graph .line { position: absolute; width: 100%; height: 2px; background: #00E5FF; top: 50%; animation: wave 2s infinite linear; }
 
-.preview-card h5 {
-    margin: 10px 0;
-    font-size: 0.9rem;
-    color: #ffffff;
-}
+@keyframes wave { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-.mini-graph {
-    height: 30px;
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-}
-
-.mini-graph .line {
-    position: absolute;
-    width: 100%; height: 2px;
-    background: #00E5FF;
-    top: 50%;
-    animation: wave 2s infinite linear;
-}
-
-@keyframes wave {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-/* Launch Zone Styling */
-.launch-zone {
-    position: relative;
-    display: inline-block;
-}
-
-.launch-main {
-    font-size: 1.1rem;
-    padding: 1.5rem 4rem;
-    z-index: 5;
-}
-
-.launch-note {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: #64748B;
-}
+.launch-zone { margin-top: 40px; position: relative; display: inline-block; }
+.launch-main { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; padding: 1.5rem 3.5rem; }
+.launch-note { margin-top: 20px; font-size: 0.8rem; color: #9eabbd; }
 
 .pulse-ring {
     position: absolute;
@@ -634,7 +311,10 @@ body {
     z-index: -1;
 }
 
-@keyframes pulse {
-    0% { width: 80%; height: 80%; opacity: 1; }
-    100% { width: 130%; height: 180%; opacity: 0; }
-}
+@keyframes pulse { 0% { width: 90%; height: 90%; opacity: 1; } 100% { width: 140%; height: 160%; opacity: 0; } }
+
+/* ==========================================================================
+   9. FOOTER
+   ========================================================================== */
+
+.footer { padding: 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); color: #64748B; font-size: 0.8rem; }
