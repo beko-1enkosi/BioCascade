@@ -531,3 +531,110 @@ body {
     border-color: #7C3AED;
     box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
 }
+
+/* ==========================================================
+   CLINICAL INTERFACE
+   ========================================================== */
+
+.screening-container {
+    width: 90%;
+    max-width: 1200px;
+    text-align: center;
+    padding-bottom: 100px;
+}
+
+.interface-preview {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.preview-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    padding: 20px;
+    border-radius: 16px;
+    width: 220px;
+    text-align: left;
+}
+
+.sensor-status {
+    font-size: 0.6rem;
+    color: #00E5FF;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sensor-status::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #00E5FF;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px #00E5FF;
+}
+
+.preview-card h5 {
+    margin: 10px 0;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.mini-graph {
+    height: 30px;
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mini-graph .line {
+    position: absolute;
+    width: 100%; height: 2px;
+    background: #00E5FF;
+    top: 50%;
+    animation: wave 2s infinite linear;
+}
+
+@keyframes wave {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Launch Zone Styling */
+.launch-zone {
+    position: relative;
+    display: inline-block;
+}
+
+.launch-main {
+    font-size: 1.1rem;
+    padding: 1.5rem 4rem;
+    z-index: 5;
+}
+
+.launch-note {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #64748B;
+}
+
+.pulse-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; height: 100%;
+    border: 2px solid #7C3AED;
+    border-radius: 100px;
+    animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% { width: 80%; height: 80%; opacity: 1; }
+    100% { width: 130%; height: 180%; opacity: 0; }
+}

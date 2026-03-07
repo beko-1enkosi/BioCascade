@@ -337,3 +337,14 @@ ScrollTrigger.create({
     }
 });
 
+gsap.from(".preview-card", {
+    scrollTrigger: {
+        trigger: ".interface-preview",
+        start: "top 85%"
+    },
+    opacity: 0,
+    y: 30,
+    stagger: 0.15,
+    duration: 0.8,
+    ease: "back.out(1.7)"
+});
