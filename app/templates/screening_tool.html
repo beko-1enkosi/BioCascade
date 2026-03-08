@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BioCascade | Screening Terminal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/screening.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+    <div class="screening-wrapper">
+        
+        <!-- Header -->
+        <header class="screening-header">
+            <a href="/" class="back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1>BioCascade Screening Terminal</h1>
+            <div class="model-selector">
+                <label>Model:</label>
+                <select id="model-select">
+                    <option value="B" selected>Model B (Independent Screening)</option>
+                    <option value="A">Model A (Upper Bound)</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="main-container">
+            
+            <!-- Input Form -->
+            <div class="input-panel">
+                <h3>Patient Biomarkers</h3>
+                
+                <div class="form-section">
+                    <h4><i class="bi bi-person-fill"></i> Demographics</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Age (years)</label>
+                            <input type="number" id="age" value="55" min="18" max="100">
+                        </div>
+                        <div class="input-group">
+                            <label>Gender</label>
+                            <select id="gender">
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-heart-pulse-fill"></i> Blood Pressure</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Systolic BP (mmHg)</label>
+                            <input type="number" id="systolic_bp" value="130" min="80" max="200">
+                        </div>
+                        <div class="input-group">
+                            <label>Diastolic BP (mmHg)</label>
+                            <input type="number" id="diastolic_bp" value="85" min="50" max="120">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-rulers"></i> Anthropometrics</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>BMI (kg/m²)</label>
+                            <input type="number" step="0.1" id="bmi" value="28.5" min="15" max="50">
+                        </div>
+                        <div class="input-group">
+                            <label>Waist (cm)</label>
+                            <input type="number" id="waist_cm" value="95" min="50" max="150">
+                        </div>
+                        <div class="input-group">
+                            <label>Height (cm)</label>
+                            <input type="number" id="height_cm" value="170" min="100" max="220">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-droplet-fill"></i> Glucose Metabolism</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>HbA1c (%)</label>
+                            <input type="number" step="0.1" id="hba1c" value="6.2" min="4" max="15">
+                        </div>
+                        <div class="input-group">
+                            <label>Fasting Glucose (mg/dL)</label>
+                            <input type="number" id="fasting_glucose" value="105" min="60" max="300">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-water"></i> Lipid Panel</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Triglycerides (mg/dL)</label>
+                            <input type="number" id="triglycerides" value="180" min="30" max="500">
+                        </div>
+                        <div class="input-group">
+                            <label>HDL (mg/dL)</label>
+                            <input type="number" id="hdl_cholesterol" value="42" min="20" max="100">
+                        </div>
+                        <div class="input-group">
+                            <label>LDL (mg/dL)</label>
+                            <input type="number" id="ldl_cholesterol" value="130" min="50" max="250">
+                        </div>
+                        <div class="input-group">
+                            <label>Total Cholesterol (mg/dL)</label>
+                            <input type="number" id="total_cholesterol" value="210" min="100" max="350">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-activity"></i> Renal Function</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Creatinine (mg/dL)</label>
+                            <input type="number" step="0.1" id="serum_creatinine" value="1.1" min="0.5" max="5">
+                        </div>
+                        <div class="input-group">
+                            <label>BUN (mg/dL)</label>
+                            <input type="number" id="bun" value="18" min="5" max="50">
+                        </div>
+                        <div class="input-group">
+                            <label>Uric Acid (mg/dL)</label>
+                            <input type="number" step="0.1" id="uric_acid" value="6.5" min="2" max="12">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-fire"></i> Inflammatory Markers</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>hsCRP (mg/L)</label>
+                            <input type="number" step="0.1" id="hscrp" value="3.5" min="0.1" max="20">
+                        </div>
+                        <div class="input-group">
+                            <label>Neutrophils (%)</label>
+                            <input type="number" step="0.1" id="neutrophil_pct" value="65" min="30" max="80">
+                        </div>
+                        <div class="input-group">
+                            <label>Lymphocytes (%)</label>
+                            <input type="number" step="0.1" id="lymphocyte_pct" value="25" min="10" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4><i class="bi bi-clipboard-pulse"></i> Hematology</h4>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Hemoglobin (g/dL)</label>
+                            <input type="number" step="0.1" id="hemoglobin" value="13.5" min="8" max="18">
+                        </div>
+                        <div class="input-group">
+                            <label>Hematocrit (%)</label>
+                            <input type="number" step="0.1" id="hematocrit" value="40" min="25" max="55">
+                        </div>
+                        <div class="input-group">
+                            <label>RDW (%)</label>
+                            <input type="number" step="0.1" id="rdw" value="13.5" min="10" max="20">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="predict-btn" class="predict-btn">
+                    <i class="bi bi-cpu-fill"></i> Calculate Risk Score
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel" id="results-panel">
+                <div class="waiting-state" id="waiting-state">
+                    <i class="bi bi-activity"></i>
+                    <p>Awaiting biomarker input...</p>
+                </div>
+
+                <div class="results-content" id="results-content" style="display:none;">
+                    <div class="risk-score-display">
+                        <h3>Risk Assessment</h3>
+                        <div class="risk-gauge">
+                            <div class="risk-value" id="risk-value">--</div>
+                            <div class="risk-label" id="risk-label">--</div>
+                        </div>
+                        <p class="model-used" id="model-used">--</p>
+                    </div>
+
+                    <div class="shap-explanation">
+                        <h3>Feature Contributions (SHAP)</h3>
+                        <img id="shap-plot" src="" alt="SHAP Waterfall Plot" style="width:100%; border-radius:12px;">
+                    </div>
+
+                    <div class="top-features">
+                        <h3>Top Contributing Factors</h3>
+                        <div id="features-list"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/screening.js') }}"></script>
+</body>
+</html>
