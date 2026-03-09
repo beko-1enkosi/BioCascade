@@ -576,3 +576,12 @@ body {
     margin-top: 20px;
     font-style: italic;
 }
+
+.medical-disclaimer{
+    margin-top:40px;
+    text-align:center;
+    font-size:0.8rem;
+    color:#64748b;
+    padding-top:20px;
+    border-top:1px solid rgba(255,255,255,0.08);
+}

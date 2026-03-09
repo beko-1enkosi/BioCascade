@@ -151,6 +151,7 @@ function animateGauge(riskScore) {
         setTimeout(() => {
             percentageElement.textContent = percentage + '%';
             percentageElement.classList.add('show');
+            
         }, 300);
         
         // Counter animation
