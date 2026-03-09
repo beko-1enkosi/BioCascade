@@ -253,3 +253,326 @@ body {
     font-size: 0.85rem;
     color: #94a3b8;
 }
+
+/* ==========================================================================
+   LOADING STATES & ANIMATIONS
+   ========================================================================== */
+
+.predict-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.predict-btn.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   RISK GAUGE - CIRCULAR DESIGN
+   ========================================================================== */
+
+.risk-gauge {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 30px auto;
+}
+
+.gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.gauge-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 20;
+}
+
+.gauge-fill {
+    fill: none;
+    stroke-width: 20;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1),
+                stroke 1s ease;
+}
+
+/* Risk levels with gradient colors */
+.gauge-fill.low-risk {
+    stroke: url(#gradient-low);
+}
+
+.gauge-fill.medium-risk {
+    stroke: url(#gradient-medium);
+}
+
+.gauge-fill.high-risk {
+    stroke: url(#gradient-high);
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.risk-percentage {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #00E5FF, #7C3AED);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.risk-percentage.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.risk-subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 8px;
+}
+
+.risk-classification {
+    margin-top: 20px;
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s ease 0.8s;
+}
+
+.risk-classification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.risk-classification.low {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.risk-classification.medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+.risk-classification.high {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ==========================================================================
+   SHAP PLOT CONTAINER
+   ========================================================================== */
+
+.shap-explanation {
+    margin: 40px 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease 1.2s;
+}
+
+.shap-explanation.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.shap-plot-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.shap-plot-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.1), transparent);
+    transition: 0.8s;
+}
+
+.shap-plot-container:hover::before {
+    left: 100%;
+}
+
+#shap-plot {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+/* ==========================================================================
+   TOP FEATURES LIST
+   ========================================================================== */
+
+.top-features {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease 1.4s;
+}
+
+.top-features.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.feature-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s ease;
+}
+
+.feature-item.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.feature-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(5px);
+}
+
+.feature-item.positive {
+    border-left-color: #ef4444;
+}
+
+.feature-item.negative {
+    border-left-color: #10b981;
+}
+
+.feature-name {
+    font-size: 0.95rem;
+    color: #e5e7eb;
+    font-weight: 600;
+}
+
+.feature-value {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.feature-impact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.shap-value {
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: 'Monaco', monospace;
+}
+
+.impact-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   PULSING INDICATOR
+   ========================================================================== */
+
+.pulse-indicator {
+    width: 12px;
+    height: 12px;
+    background: #00E5FF;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.7);
+    }
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 10px rgba(0, 229, 255, 0);
+    }
+}
+
+/* ==========================================================================
+   MODEL INFO BADGE
+   ========================================================================== */
+
+.model-used {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    color: #7C3AED;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+/* ==========================================================================
+   WAITING STATE ANIMATION
+   ========================================================================== */
+
+.waiting-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.waiting-state i {
+    font-size: 4rem;
+    color: #00E5FF;
+    opacity: 0.3;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.waiting-state p {
+    color: #64748b;
+    font-size: 1rem;
+    margin-top: 20px;
+    font-style: italic;
+}

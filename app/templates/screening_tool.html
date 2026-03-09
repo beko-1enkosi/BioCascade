@@ -167,6 +167,14 @@
                             <label>RDW (%)</label>
                             <input type="number" step="0.1" id="rdw" value="13.5" min="10" max="20">
                         </div>
+                        <div class="input-group">
+                            <label>Ferritin (ng/mL)</label>
+                            <input type="number" id="ferritin" value="100" min="10" max="500">
+                        </div>
+                        <div class="input-group">
+                            <label>Serum Iron (μg/dL)</label>
+                            <input type="number" id="serum_iron" value="80" min="30" max="200">
+                        </div>
                     </div>
                 </div>
 
@@ -184,21 +192,60 @@
 
                 <div class="results-content" id="results-content" style="display:none;">
                     <div class="risk-score-display">
+                        <div class="pulse-indicator"></div>
                         <h3>Risk Assessment</h3>
+                        
+                        <!-- Circular Gauge -->
                         <div class="risk-gauge">
-                            <div class="risk-value" id="risk-value">--</div>
-                            <div class="risk-label" id="risk-label">--</div>
+                            <svg class="gauge-svg" viewBox="0 0 280 280">
+                                <!-- Gradient Definitions -->
+                                <defs>
+                                    <linearGradient id="gradient-low" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#34d399;stop-opacity:1" />
+                                    </linearGradient>
+                                    <linearGradient id="gradient-medium" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                    </linearGradient>
+                                    <linearGradient id="gradient-high" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#f87171;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                
+                                <!-- Background Circle -->
+                                <circle class="gauge-bg" cx="140" cy="140" r="130"></circle>
+                                
+                                <!-- Foreground Circle (fills based on risk) -->
+                                <circle class="gauge-fill low-risk" cx="140" cy="140" r="130"></circle>
+                            </svg>
+                            
+                            <!-- Center Content -->
+                            <div class="gauge-center">
+                                <div class="risk-percentage" id="risk-percentage">--</div>
+                                <div class="risk-subtitle">Risk Score</div>
+                            </div>
                         </div>
-                        <p class="model-used" id="model-used">--</p>
+                        
+                        <!-- Risk Classification Badge -->
+                        <div class="risk-classification low" id="risk-classification">
+                            Calculating...
+                        </div>
+                        
+                        <!-- Model Used Badge -->
+                        <div class="model-used" id="model-used">Awaiting Analysis</div>
                     </div>
 
                     <div class="shap-explanation">
-                        <h3>Feature Contributions (SHAP)</h3>
-                        <img id="shap-plot" src="" alt="SHAP Waterfall Plot" style="width:100%; border-radius:12px;">
+                        <h3><i class="bi bi-bar-chart-fill"></i> Feature Contributions (SHAP)</h3>
+                        <div class="shap-plot-container">
+                            <img id="shap-plot" src="" alt="SHAP Waterfall Plot">
+                        </div>
                     </div>
 
                     <div class="top-features">
-                        <h3>Top Contributing Factors</h3>
+                        <h3><i class="bi bi-list-stars"></i> Top Contributing Factors</h3>
                         <div id="features-list"></div>
                     </div>
                 </div>
