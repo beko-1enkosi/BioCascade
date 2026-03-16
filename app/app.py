@@ -267,4 +267,4 @@ def get_top_features(shap_values, X, top_n=5):
     } for i in indices]
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=5000)

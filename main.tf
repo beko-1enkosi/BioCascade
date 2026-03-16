@@ -1,20 +1,20 @@
-# 1. SETUP: These tell Terraform which plugins to use
+# 1. SETUP: Tell Terraform which plugins to use
 terraform {
   required_providers {
     coder = {
-      source  = "coder/coder"
+      source = "coder/coder"
     }
     docker = {
-      source  = "kreuzwerker/docker"
+      source = "kreuzwerker/docker"
     }
   }
 }
 
-# 2. IDENTIFICATION: This tells Coder WHO is clicking the button
+# 2. DATA: Get user and workspace info
 data "coder_workspace" "me" {}
 
-# 3. THE INTERFACE: Your "Enable GPU" Toggle
-data "coder_parameter" "enable_gpu" {
+# 3. INTERFACE: The Interactive Parameter (The "Toggle")
+data "coder_parameter" "gpu_enabled" {
   name         = "gpu_enabled"
   display_name = "Enable GPU Support?"
   type         = "bool"
@@ -22,29 +22,43 @@ data "coder_parameter" "enable_gpu" {
   order        = 1
 }
 
-# 4. THE IMAGE: Telling Coder to use your Dockerfile
-resource "docker_image" "biocascade_env" {
-  name = "coder-biocascade-setup"
-  build {
-    context = "." 
-  }
-}
-
-# 5. THE WORKSPACE: Creating the actual "Cloud Desktop"
-resource "docker_container" "workspace" {
-  image = docker_image.biocascade_env.name
-  # This makes the name unique for every student in the hackathon
-  name  = "coder-${data.coder_workspace.me.owner}-${data.coder_workspace.me.name}"
-  
-  # This is a baby step but IMPORTANT: 
-  # It connects the container to the Coder agent so you can see it in your browser
-  entrypoint = ["sh", "-c", replace(data.coder_agent.main.init_script, "/localhost/i", "localhost")]
-  env        = ["CODER_AGENT_TOKEN=${data.coder_agent.main.token}"]
-}
-
-# 6. THE AGENT: This is the "soul" of the workspace
+# 4. AGENT: The "Soul" of the workspace (where VS Code lives)
 resource "coder_agent" "main" {
   arch           = "amd64"
   os             = "linux"
-  startup_script = "python3 /app/app.py"
+  # This matches the /workspace/app/app.py path we found in your Exec check!
+  startup_script = "python3 /workspace/app/app.py"
+
+  # Adds a button in the Coder UI to open your app
+  display_apps {
+    vscode          = true
+    port_forward_6d = true
+  }
+}
+
+# 5. IMAGE: Build your Dockerfile locally
+resource "docker_image" "biocascade_image" {
+  name = "coder-biocascade"
+  build {
+    context = "."
+  }
+}
+
+# 6. CONTAINER: The live workspace
+resource "docker_container" "workspace" {
+  count = data.coder_workspace.me.start_count
+  image = docker_image.biocascade_image.name
+  
+  # Uses the user's name to keep the container unique
+  name  = "coder-${data.coder_workspace.me.owner}-${data.coder_workspace.me.name}"
+  
+  # Connects the container to the Coder dashboard
+  entrypoint = ["sh", "-c", replace(coder_agent.main.init_script, "/localhost/i", "localhost")]
+  env        = ["CODER_AGENT_TOKEN=${coder_agent.main.token}"]
+  
+  # Keeps the container from shutting down immediately
+  host {
+    host = "host.docker.internal"
+    ip   = "host-gateway"
+  }
 }
