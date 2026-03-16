@@ -29,7 +29,6 @@ resource "coder_agent" "main" {
 
   display_apps {
     vscode          = true
-    port_forward_6d = true
   }
 }
 
@@ -43,8 +42,7 @@ resource "docker_image" "biocascade_image" {
 resource "docker_container" "workspace" {
   count = data.coder_workspace.me.start_count
   image = docker_image.biocascade_image.name
-  name  = "coder-${data.coder_workspace.me.owner}-${data.coder_workspace.me.name}"
-  
+  name  = "coder-${data.coder_workspace.me.id}"
   entrypoint = ["sh", "-c", replace(coder_agent.main.init_script, "/localhost/i", "localhost")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.main.token}"]
 }
