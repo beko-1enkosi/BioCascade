@@ -10,3 +10,4 @@ flask
 numpy
 scipy
 joblib
+gunicorn
