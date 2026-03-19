@@ -1,9 +1,12 @@
-flask
 duckdb
 pandas
 pyarrow
 xgboost
+shap
 scikit-learn
+matplotlib
+seaborn
+flask
 numpy
 scipy
 joblib

@@ -1,9 +1,0 @@
-.terraform/
-.terraform.lock.hcl
-terraform.tfstate
-Dockerfile
-docker-compose.yml
-.dockerignore
-.git/
-__pycache__/
-.venv/
