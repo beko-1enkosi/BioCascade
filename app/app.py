@@ -138,7 +138,7 @@ def validate_input(data):
 
         # Tree estimators use float32 internally. Reject oversized raw values
         # before feature engineering or model inference.
-        if number > np.finfo(np.float32).max:
+        if number > float(np.finfo(np.float32).max):
             raise ValueError(f"{name} is too large.")
 
         normalized[field] = int(number) if field == "gender" else number
@@ -181,7 +181,7 @@ def predict():
         # silently substitute a value for a required biomarker.
         X = pd.DataFrame([features], columns=feature_list)
         values = X.to_numpy(dtype=float)
-        if not np.isfinite(values).all() or (np.abs(values) > np.finfo(np.float32).max).any():
+        if not np.isfinite(values).all() or (np.abs(values) > float(np.finfo(np.float32).max)).any():
             raise ValueError("Biomarker values produce an invalid or oversized model feature.")
         
         print(f"Final feature matrix shape: {X.shape}")
