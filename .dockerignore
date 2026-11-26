@@ -4,3 +4,5 @@ __pycache__
 .gitignore
 *.ipynb_checkpoints
 .vscode
+# Research notebooks
+notebooks/
