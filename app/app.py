@@ -59,29 +59,67 @@ def screening_tool():
     return render_template("screening_tool.html")
 
 
+# Raw biomarker inputs required to reproduce each model's feature vector.
+# Includes dependencies of engineered features (e.g. height for waist/height,
+# triglycerides for Model A's metabolic syndrome score).
+COMMON_REQUIRED_FIELDS = frozenset({
+    "age", "gender", "bmi", "waist_cm", "height_cm",
+    "hdl_cholesterol", "total_cholesterol", "uric_acid", "hscrp",
+    "neutrophil_pct", "lymphocyte_pct", "hemoglobin", "hematocrit",
+    "rdw", "sodium", "potassium",
+})
+REQUIRED_FIELDS = {
+    "A": COMMON_REQUIRED_FIELDS | {
+        "systolic_bp", "diastolic_bp", "hba1c", "triglycerides",
+        "serum_creatinine", "bun",
+    },
+    "B": COMMON_REQUIRED_FIELDS | {"ferritin", "serum_iron"},
+}
+# Recognize older clients' additional biomarkers, but do not let inactive
+# inputs enter feature engineering for the selected model.
+KNOWN_FIELDS = REQUIRED_FIELDS["A"] | REQUIRED_FIELDS["B"] | {
+    "fasting_glucose", "ldl_cholesterol", "wbc_count",
+}
+POSITIVE_FIELDS = frozenset({
+    "age", "height_cm", "bmi", "waist_cm", "serum_creatinine",
+    "hdl_cholesterol", "sodium", "potassium", "systolic_bp",
+    "diastolic_bp",
+})
+
+
 def validate_input(data):
+    """Validate and normalize the selected model's raw input contract."""
     if not isinstance(data, dict) or not data:
         raise ValueError("Provide biomarker input data.")
 
-    if data.get("model") not in ("A", "B"):
+    model_choice = data.get("model")
+    if model_choice not in ("A", "B"):
         raise ValueError("Select Model A or Model B.")
 
-    for field, value in data.items():
-        if field == "model":
-            continue
+    required = REQUIRED_FIELDS[model_choice]
+    missing = sorted(required - data.keys())
+    if missing:
+        raise ValueError("Missing required biomarkers: " + ", ".join(missing))
 
+    unknown = sorted(data.keys() - KNOWN_FIELDS - {"model"})
+    if unknown:
+        raise ValueError("Unrecognized biomarker fields: " + ", ".join(unknown))
+
+    normalized = {"model": model_choice}
+    for field in sorted(required):
+        value = data[field]
         name = field.replace("_", " ").title()
 
-        if value is None or value == "":
+        if value is None or (isinstance(value, str) and not value.strip()):
             raise ValueError(f"{name} is required.")
 
-        if isinstance(value, bool):
+        if isinstance(value, bool) or not isinstance(value, (int, float, str)):
             raise ValueError(f"{name} must be a number.")
 
         try:
             number = float(value)
-        except (ValueError, TypeError):
-            raise ValueError(f"{name} must be a number.")
+        except (ValueError, TypeError, OverflowError):
+            raise ValueError(f"{name} must be a number.") from None
 
         if not math.isfinite(number):
             raise ValueError(f"{name} must be finite.")
@@ -89,19 +127,26 @@ def validate_input(data):
         if number < 0:
             raise ValueError(f"{name} cannot be negative.")
 
-        if field in (
-            "age", "height_cm", "bmi",
-            "serum_creatinine", "hdl_cholesterol"
-        ) and number <= 0:
+        if field in POSITIVE_FIELDS and number <= 0:
             raise ValueError(f"{name} must be greater than zero.")
 
         if field == "gender" and number not in (1, 2):
             raise ValueError("Invalid gender code.")
 
-        if field in (
-            "neutrophil_pct", "lymphocyte_pct", "hematocrit"
-        ) and number > 100:
+        if field in ("neutrophil_pct", "lymphocyte_pct", "hematocrit") and number > 100:
             raise ValueError(f"{name} cannot exceed 100%.")
+
+        # Tree estimators use float32 internally. Reject oversized raw values
+        # before feature engineering or model inference.
+        if number > np.finfo(np.float32).max:
+            raise ValueError(f"{name} is too large.")
+
+        normalized[field] = int(number) if field == "gender" else number
+
+    if model_choice == "A" and normalized["systolic_bp"] < normalized["diastolic_bp"]:
+        raise ValueError("Systolic pressure must not be lower than diastolic pressure.")
+
+    return normalized
 
 
 @app.route("/predict", methods=["POST"])
@@ -110,8 +155,7 @@ def predict():
         return jsonify({'success': False, 'error': 'Models not loaded'}), 500
     
     try:
-        data = request.get_json(silent=True)
-        validate_input(data)
+        data = validate_input(request.get_json(silent=True))
         model_choice = data["model"]    
         
         print(f"\n{'='*70}")
@@ -133,8 +177,12 @@ def predict():
         print(f"Engineered features: {len(features)}")
         
         # Create DataFrame with ONLY the features the model expects
-        X = pd.DataFrame([features])
-        X = X.reindex(columns=feature_list, fill_value=np.nan)
+        # A missing engineered column is a server error, not a reason to
+        # silently substitute a value for a required biomarker.
+        X = pd.DataFrame([features], columns=feature_list)
+        values = X.to_numpy(dtype=float)
+        if not np.isfinite(values).all() or (np.abs(values) > np.finfo(np.float32).max).any():
+            raise ValueError("Biomarker values produce an invalid or oversized model feature.")
         
         print(f"Final feature matrix shape: {X.shape}")
         print(f"Missing values: {X.isnull().sum().sum()}")
@@ -165,11 +213,12 @@ def predict():
             'top_features': top_features
         })
         
-    except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
-        import traceback
-        traceback.print_exc()
+    except (ValueError, OverflowError) as e:
+        # Return actionable validation errors without exposing a traceback.
         return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception:
+        app.logger.exception("Prediction processing failed")
+        return jsonify({'success': False, 'error': 'Prediction processing failed.'}), 500
 
 # ============================================================================
 # FEATURE ENGINEERING (COMPREHENSIVE)

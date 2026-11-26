@@ -181,7 +181,7 @@ The dashboard retains the original scroll-driven DNA animation. The responsive s
 
 Both models and SHAP outputs were smoke-tested locally. The saved Model B is a scikit-learn pipeline; the app uses its underlying `rf` estimator for TreeExplainer while retaining the pipeline for prediction.
 
-The browser requires the selected model's inputs. The API validates supplied values but still defaults some omitted fields; strict server-side required-field validation remains a follow-up task. Use synthetic profiles only; do not submit personal or clinical data.
+Both the browser and Flask API enforce the selected model's required raw biomarkers: 22 for Model A and 18 for Model B, including dependencies of engineered features. Missing, blank, nonnumeric, nonfinite and invalid required values return HTTP 400 before inference. Unrecognized fields are rejected; known inactive biomarkers are ignored for compatibility with earlier clients. No missing required biomarker is silently defaulted. Use synthetic profiles only; do not submit personal or clinical data.
 
 | Route | Purpose |
 |---|---|
@@ -273,7 +273,7 @@ python -m pip check
 python -m pytest -q -W error::sklearn.exceptions.InconsistentVersionWarning
 ```
 
-The local release test run passed all 40 tests, covering feature engineering, model loading and inference, SHAP, API validation and training. GitHub Actions runs the Python suite on Ubuntu with Python 3.13. The CI badge above tracks the main branch.
+The initial local release test run passed all 40 tests. The expanded suite adds direct API tests for every required-field omission, valid model-specific payloads, malformed inputs and inactive biomarker isolation, alongside feature engineering, inference, SHAP and training coverage. GitHub Actions runs the Python suite on Ubuntu with Python 3.13. The CI badge above tracks the main branch.
 
 ### Docker and production server
 
@@ -318,7 +318,7 @@ Key limitations include:
 - **Calibration and thresholds:** Class weighting and a default classification threshold do not establish calibrated clinical probabilities.
 - **Reproducibility:** The current artifacts and dependencies are aligned; training-serving parity, historical plot provenance, notebook execution and cross-validation preprocessing still warrant further verification.
 
-Future work includes a controlled feature-ablation study, leakage-safe evaluation, calibration and threshold analysis, strict API required-field enforcement, and external validation with appropriate confirmed outcomes. Longitudinal datasets, imaging and other modalities could be explored if available and scientifically justified.
+Future work includes a controlled feature-ablation study, leakage-safe evaluation, calibration and threshold analysis, and external validation with appropriate confirmed outcomes. Longitudinal datasets, imaging and other modalities could be explored if available and scientifically justified.
 
 ## 14. Author and acknowledgments
 
