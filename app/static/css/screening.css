@@ -637,3 +637,20 @@ button:disabled {opacity:.55;cursor:not-allowed;}
 @media(max-width:950px) {.main-container {grid-template-columns:1fr;}.results-panel {position:static;}}
 @media(max-width:560px) {.model-options {grid-template-columns:1fr;}.screening-header h1 {order:3;flex-basis:100%;}.input-row {grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));}.feature-item {padding:12px;}.risk-percentage {font-size:2.6rem;}}
 @media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation-duration:.01ms !important;transition-duration:.01ms !important;}}
+
+/* Staged prediction reveal: the gauge and numeric score share one JS clock. */
+.gauge-fill { transition: none; }
+.risk-percentage.show { transition: none; }
+.result-reveal { animation: screening-result-reveal 400ms ease both; }
+@keyframes screening-result-reveal {
+ from { opacity: 0; transform: translateY(10px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.feature-item.result-reveal { animation-name: screening-feature-reveal; }
+@keyframes screening-feature-reveal {
+ from { opacity: 0; transform: translateX(-12px); }
+ to { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+ .result-reveal { animation: none; }
+}
