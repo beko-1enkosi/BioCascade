@@ -10,12 +10,16 @@ const profiles = {
 let busy = false;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const timing = { loading: 1200, gauge: 2000, classification: 800, graph: 600, feature: 100 };
+const waitingText = document.querySelector('#waiting-state p');
+const idleText = waitingText.textContent;
 
 function animateScore(gauge, percentage, circumference, target, duration) {
  if (!duration) {
+  // Reduced motion: show the actual score without a moving sweep.
   gauge.style.strokeDashoffset = circumference * (1 - target);
   percentage.textContent = (target * 100).toFixed(1) + '%';
-  return Promise.resolve();
+  return wait(500);
  }
  return new Promise(resolve => {
   let start;
@@ -42,6 +46,7 @@ function status(text='',error=false){message.textContent=text;message.classList.
 function clearResults(){
  document.getElementById('results-content').style.display='none';
  document.getElementById('waiting-state').style.display='';
+ waitingText.textContent = idleText;
  document.getElementById('shap-plot').removeAttribute('src');
  document.getElementById('features-list').replaceChildren();
  document.getElementById('results-panel').removeAttribute('aria-busy');
@@ -82,13 +87,15 @@ form.addEventListener('submit',async event=>{
  form.querySelectorAll('[data-model]:not([hidden]) input,[data-model]:not([hidden]) select').forEach(input=>{data[input.id]=Number(input.value);});
  if(data.model==='A'&&data.systolic_bp<data.diastolic_bp){status('Systolic pressure must not be lower than diastolic pressure.',true);return;}
  clearResults();setBusy(true);status('Calculating the research proxy score…');
+ waitingText.textContent = 'Analyzing biomarkers… Please wait.';
  const started = performance.now();
  document.getElementById('results-panel').setAttribute('aria-busy','true');
  try{
   const response=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
   const result=await response.json();
   if(!response.ok||!result.success)throw new Error(result.error||'Prediction failed.');
-  if (!reducedMotion.matches) await wait(Math.max(0, 600 - (performance.now() - started)));
+  // Keep the loading stage visible even when the prediction is very fast.
+  await wait(Math.max(0, timing.loading - (performance.now() - started)));
   status('Revealing model result…');
   await displayResults(result);
   status('Prediction complete.');
@@ -110,7 +117,7 @@ async function displayResults(result){
  const topSection = content.querySelector('.top-features');
  const plot = document.getElementById('shap-plot');
  const list = document.getElementById('features-list');
- const pause = ms => reducedMotion.matches ? Promise.resolve() : wait(ms);
+ const pause = wait;
 
  // Reset every result, including repeated predictions with the same score.
  gauge.setAttribute('class','gauge-fill ' + (high ? 'high-risk' : 'low-risk'));
@@ -129,11 +136,13 @@ async function displayResults(result){
  if (result.shap_plot) plot.src = result.shap_plot;
  document.getElementById('waiting-state').style.display = 'none';
  content.style.display = 'block';
- if (matchMedia('(max-width:950px)').matches) {
+ // Make the gauge visible before starting the animation on every screen size.
+ const bounds = gauge.getBoundingClientRect();
+ if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
   panel.scrollIntoView({behavior:reducedMotion.matches?'auto':'smooth',block:'start'});
+  await pause(reducedMotion.matches ? 0 : 350);
  }
-
- await animateScore(gauge, percentage, circumference, target, reducedMotion.matches ? 0 : 1400);
+ await animateScore(gauge, percentage, circumference, target, reducedMotion.matches ? 0 : timing.gauge);
 
  function reveal(element) {
   element.hidden = false;
@@ -142,10 +151,10 @@ async function displayResults(result){
  reveal(classification);
  reveal(model);
  reveal(note);
- await pause(200);
+ await pause(timing.classification);
  if (result.shap_plot) {
   reveal(shapSection);
-  await pause(400);
+  await pause(timing.graph);
  }
  for(const feat of result.top_features||[]){
   const positive=feat.shap_value>0,item=document.createElement('div');item.className='feature-item '+(positive?'positive':'negative');
@@ -159,7 +168,8 @@ async function displayResults(result){
   reveal(topSection);
   for (const item of list.children) {
    item.classList.add('show', 'result-reveal');
-   await pause(100);
+   await pause(timing.feature);
   }
+  if (!reducedMotion.matches) await pause(300);
  }
 }

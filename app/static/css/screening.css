@@ -654,3 +654,6 @@ button:disabled {opacity:.55;cursor:not-allowed;}
 @media (prefers-reduced-motion: reduce) {
  .result-reveal { animation: none; }
 }
+
+/* Keep the results panel within the visible viewport when jumping to it. */
+#results-panel { scroll-margin-top: 20px; }
