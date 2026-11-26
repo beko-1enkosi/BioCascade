@@ -33,7 +33,7 @@
             <a href="https://github.com/beko-1enkosi" target="_blank" class="nav-link-git">
                 <i class="bi bi-github"></i>
             </a>
-            <a href="#" class="sponsor-btn">Sponsor</a>
+            <a href="/screening-tool" class="sponsor-btn">Try Demo</a>
         </div>
     </header>
 
@@ -48,7 +48,7 @@
             <div class="hero-container">
                 <div class="hackathon-tag">
                     <span class="tag-line"></span>
-                    <span class="tag-text">BYTE 2 BEAT // 2026</span>
+                    <span class="tag-text">EXPLAINABLE MACHINE LEARNING</span>
                 </div>
                 <div class="title-wrapper">
                     <h1 class="main-title">BioCascade</h1>
@@ -58,7 +58,7 @@
                     <span class="text-glow">interpretable risk modeling.</span>
                 </p>
                 <div class="hero-actions" style="opacity: 0;">
-                    <a href="#screening" class="primary-btn">Launch Screening</a>
+                    <a href="#screening" class="primary-btn">Explore the Models</a>
                 </div>
             </div>
         </section>
@@ -75,23 +75,17 @@
                     <h2 class="section-title">The Silent Epidemic</h2>
                     
                     <p class="about-text">
-                        Cardiovascular disease remains the #1 cause of death globally, claiming 
-                        <strong>18.6 million lives annually</strong>. Our research focuses on 
-                        <strong>HFpEF</strong> (Heart Failure with preserved Ejection Fraction), 
-                        a condition affecting ~50% of heart failure patients where the heart 
-                        pumps normally but fails to meet metabolic demands.
+                        Cardiovascular disease is the motivation for this research. BioCascade explores metabolic, vascular and renal dysfunction through a proxy inspired by <strong>HFpEF</strong> (heart failure with preserved ejection fraction). The counter below is illustrative, not live surveillance data.
                     </p>
 
                     <div class="impact-counter">
                         <div class="counter-number" id="death-counter">0</div>
-                        <div class="counter-label">Global Cardiovascular Fatalities <br><span>(Since you arrived)</span></div>
+                        <div class="counter-label">Estimated Global Cardiovascular Fatalities <br><span>(Illustrative counter)</span></div>
                     </div>
 
                     <p class="about-text-highlight">
                         <i class="bi bi-lightbulb-fill"></i>
-                        BioCascade democratizes clinical intelligence by mapping 
-                        HFpEF risk through de-identified biomedical datasets, enabling 
-                        <strong>early detection</strong> before overt disease manifestation.
+                        BioCascade explores an <strong>HFpEF-inspired research proxy</strong> using de-identified biomedical datasets and explainable machine learning. It does not predict a confirmed HFpEF diagnosis.
                     </p>
 
                     <div class="dataset-info">
@@ -102,12 +96,12 @@
                                 <div class="stat-label">Adult Participants</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">50+</div>
-                                <div class="stat-label">Biomarkers</div>
+                                <div class="stat-number">4,573</div>
+                                <div class="stat-label">Labeled Records</div>
                             </div>
                             <div class="stat-item">
                                 <div class="stat-number">7.4%</div>
-                                <div class="stat-label">High-Risk Phenotype</div>
+                                <div class="stat-label">Positive Proxy (Labeled Cohort)</div>
                             </div>
                         </div>
                     </div>
@@ -122,7 +116,7 @@
                         <div class="cascade-arrow">↓</div>
                         <div class="cascade-node">Renal Response</div>
                         <div class="cascade-arrow">↓</div>
-                        <div class="cascade-node final">HFpEF Cascade Detection</div>
+                        <div class="cascade-node final">Multi-System Dysfunction Proxy</div>
                     </div>
                 </div>
 
@@ -149,45 +143,37 @@
                         <h3>Cascade Interactions</h3>
                         <p>Engineered features capturing <strong>multi-system dysfunction</strong>: 
                         Vascular-Metabolic Load (BP × HbA1c) and Metabolic-Renal Stress (HbA1c × 1/eGFR) 
-                        rank as <strong>top predictors</strong>, validating that interactions outperform 
-                        individual biomarkers.</p>
+                        ranked among the <strong>top predictors</strong> in the original Model A analysis. Their importance does not establish causal effects.</p>
                         <div class="feature-badge">Novel Contribution</div>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon"><i class="bi bi-eye-fill"></i></div>
                         <h3>Full Interpretability</h3>
-                        <p>Every prediction explained via <strong>SHAP values</strong>. Clinicians see 
-                        exactly which biomarkers drive risk for each patient, enabling 
-                        <strong>targeted interventions</strong> (e.g., prioritize glucose control vs BP management).</p>
-                        <div class="feature-badge">Clinical Trust</div>
+                        <p>Predictions are explained using <strong>SHAP values</strong>, showing which features raise or lower the model score for each example. These contributions do not establish treatment effects.</p>
+                        <div class="feature-badge">Explainable AI</div>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
                         <h3>Two-Model Validation</h3>
-                        <p><strong>Model A (0.998 AUC):</strong> Validates phenotype definition. 
-                        <strong>Model B (0.821 AUC):</strong> Demonstrates practical screening with 
-                        independent markers only. This dual approach ensures <strong>scientific rigor</strong>.</p>
+                        <p><strong>Model A (0.9984 AUC):</strong> Upper-bound benchmark with target overlap. 
+                        <strong>Model B (0.8293 AUC):</strong> Explores prediction using indirect markers. This dual approach makes <strong>target overlap</strong> explicit.</p>
                         <div class="feature-badge">Methodology</div>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon"><i class="bi bi-cash-coin"></i></div>
-                        <h3>Accessible Screening</h3>
-                        <p>Model B uses routine metabolic panel + waist measurement (~<strong>$50</strong>). 
-                        No expensive imaging required. Enables screening in <strong>primary care settings</strong> 
-                        and underserved populations.</p>
-                        <div class="feature-badge">Healthcare Equity</div>
+                        <h3>Accessible Biomarkers</h3>
+                        <p>Model B explores <strong>demographics, anthropometrics and laboratory biomarkers</strong> without imaging inputs. Clinical utility and cost-effectiveness have not been established.</p>
+                        <div class="feature-badge">Research Accessibility</div>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
-                        <h3>Early Detection</h3>
-                        <p>Independent markers capture <strong>upstream metabolic dysfunction</strong> 
-                        before BP/glucose become severely abnormal. Provides a <strong>prevention opportunity</strong> 
-                        window for lifestyle and pharmacologic interventions.</p>
-                        <div class="feature-badge">Preventive Medicine</div>
+                        <h3>Independent Prediction</h3>
+                        <p>Independent markers provide <strong>predictive signal</strong> for the defined proxy. Longitudinal studies would be needed to assess early detection of disease.</p>
+                        <div class="feature-badge">Research Potential</div>
                     </div>
 
                     <div class="feature-card">
@@ -212,7 +198,7 @@
                     </div>
                     <h2 class="section-title">Model Performance Metrics</h2>
                     <p class="section-subtitle">
-                        Rigorous evaluation across multiple validation strategies
+                        Retrained models · 915 held-out samples · 68 positive proxy cases
                     </p>
                 </div>
 
@@ -221,29 +207,28 @@
                     <div class="model-card model-a">
                         <div class="model-header">
                             <h3>Model A: Upper Bound</h3>
-                            <span class="model-tag">Validation Study</span>
+                            <span class="model-tag">Upper-Bound Benchmark</span>
                         </div>
                         <div class="model-metric-main">
-                            <div class="metric-value">0.998</div>
+                            <div class="metric-value">0.9984</div>
                             <div class="metric-label">ROC-AUC Score</div>
                         </div>
                         <div class="model-details">
                             <div class="detail-item">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <span>30 features including cascade interactions</span>
+                                <span>31 features including cascade interactions</span>
                             </div>
                             <div class="detail-item">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <span>Validates phenotype separability</span>
+                                <span>Includes label-defining features</span>
                             </div>
                             <div class="detail-item">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <span>Top feature: Vascular-Metabolic Load (20.6%)</span>
+                                <span>Average precision: 0.9803</span>
                             </div>
                         </div>
                         <div class="model-purpose">
-                            <strong>Purpose:</strong> Demonstrates that ML can identify complex 
-                            multi-system patterns beyond simple thresholds
+                            <strong>Purpose:</strong> Benchmarks how well the model reproduces the research-defined phenotype using label-related features.
                         </div>
                     </div>
 
@@ -251,58 +236,55 @@
                     <div class="model-card model-b">
                         <div class="model-header">
                             <h3>Model B: Independent</h3>
-                            <span class="model-tag">Clinical Deployment</span>
+                            <span class="model-tag">Independent Research</span>
                         </div>
                         <div class="model-metric-main">
-                            <div class="metric-value">0.821</div>
+                            <div class="metric-value">0.8293</div>
                             <div class="metric-label">ROC-AUC Score</div>
                         </div>
                         <div class="model-details">
                             <div class="detail-item">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <span>21 independent features (no label leakage)</span>
+                                <span>21 features excluding direct label inputs and derivatives</span>
                             </div>
                             <div class="detail-item">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <span>Practical screening performance</span>
+                                <span>Positive-class precision: 30% · Recall: 54%</span>
                             </div>
                             <div class="detail-item">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <span>Top feature: Age (27.3% importance)</span>
+                                <span>Average precision: 0.2869</span>
                             </div>
                         </div>
                         <div class="model-purpose">
-                            <strong>Purpose:</strong> Proves generalizable screening utility 
-                            using routine metabolic markers accessible in primary care
+                            <strong>Purpose:</strong> Explores whether indirect biomarkers can distinguish the research proxy without direct label inputs.
                         </div>
                     </div>
                 </div>
 
                 <!-- Key Findings -->
                 <div class="key-findings">
-                    <h3><i class="bi bi-star-fill"></i> Key Findings from SHAP Analysis</h3>
+                    <h3><i class="bi bi-star-fill"></i> Key Findings and Model Limitations</h3>
                     <div class="findings-grid">
                         <div class="finding-item">
                             <div class="finding-icon">⚡</div>
                             <div class="finding-text">
-                                <strong>Cascade Hypothesis Validated:</strong> Interaction features 
+                                <strong>Cascade Interactions:</strong> Interaction features 
                                 (vasc-metabolic load, metabolic-renal stress) rank as top predictors 
-                                in Model A, confirming multi-system interactions drive risk
+                                in the original Model A analysis. This does not establish causation.
                             </div>
                         </div>
                         <div class="finding-item">
                             <div class="finding-icon">🎯</div>
                             <div class="finding-text">
-                                <strong>Independent Screening Works:</strong> Model B achieves 
-                                excellent discrimination (0.821 AUC) using only accessible markers, 
-                                enabling practical deployment
+                                <strong>Independent Predictive Signal:</strong> Model B achieves 
+                                a ROC-AUC of 0.8293, but positive-class precision remains limited.
                             </div>
                         </div>
                         <div class="finding-item">
                             <div class="finding-icon">🔬</div>
                             <div class="finding-text">
-                                <strong>Scientific Rigor:</strong> Two-model approach demonstrates 
-                                we understand limitations (label leakage) and test generalization properly
+                                <strong>Scientific Rigor:</strong> The two-model approach distinguishes target overlap from indirect prediction. External clinical validation is still needed.
                             </div>
                         </div>
                     </div>
@@ -320,7 +302,7 @@
                     </div>
                     <h2 class="section-title">The Interpretability Engine</h2>
                     <p class="section-subtitle">
-                        End-to-end pipeline from raw data to clinical insights
+                        End-to-end pipeline from raw data to explainable predictions
                     </p>
                 </div>
 
@@ -328,8 +310,8 @@
                     <div class="step-card">
                         <div class="step-icon"><i class="bi bi-database-fill-gear"></i></div>
                         <h4>Data Pipeline</h4>
-                        <p>NHANES 2017-2018 (5,533 patients) → DuckDB storage → 
-                        Feature engineering (50+ biomarkers) → Label definition 
+                        <p>NHANES 2017-2018 (5,533 participants) → DuckDB storage → 
+                        Feature engineering → Label definition 
                         (multi-system dysfunction proxy)</p>
                     </div>
 
@@ -339,7 +321,7 @@
                         <div class="step-icon"><i class="bi bi-cpu-fill"></i></div>
                         <h4>ML Training</h4>
                         <p>Random Forest with class balancing → Two-model validation → 
-                        Feature importance ranking → Cross-validation → 
+                        Feature importance ranking → Held-out evaluation → 
                         Model persistence (joblib)</p>
                     </div>
 
@@ -349,8 +331,8 @@
                         <div class="step-icon"><i class="bi bi-eye-fill"></i></div>
                         <h4>SHAP Explanations</h4>
                         <p>TreeExplainer for global importance → Waterfall plots for 
-                        individual patients → Feature contribution analysis → 
-                        Clinical narrative generation</p>
+                        individual examples → Feature contribution analysis → 
+                        Model score interpretation</p>
                     </div>
                 </div>
 
@@ -377,13 +359,11 @@
                 <div class="screening-header">
                     <div class="hackathon-tag">
                         <span class="tag-line"></span>
-                        <span class="tag-text">CLINICAL INTERFACE</span>
+                        <span class="tag-text">INTERACTIVE DEMONSTRATION</span>
                     </div>
-                    <h2 class="section-title">Ready for Assessment?</h2>
+                    <h2 class="section-title">Explore the Models</h2>
                     <p class="about-text" style="margin: 0 auto 40px; max-width: 650px;">
-                        Our model processes de-identified patient data through three primary system 
-                        filters to calculate a <strong>Cascade Risk Score</strong>. Input routine 
-                        biomarkers and receive instant risk stratification with explainable AI insights.
+                        Choose either research model and load a synthetic biomarker profile to explore its <strong>proxy score</strong> and SHAP feature contributions.
                     </p>
                 </div>
 
@@ -413,7 +393,7 @@
                     <a href="/screening-tool" class="primary-btn launch-main">
                         Enter Screening Terminal <i class="bi bi-arrow-right-short"></i>
                     </a>
-                    <p class="launch-note">Requires de-identified biomarker input • Research tool only</p>
+                    <p class="launch-note">Use synthetic examples only • Research tool only</p>
                 </div>
             </div>
         </section>
@@ -444,7 +424,7 @@
                 <a href="#performance">Performance</a>
             </div>
             <div class="footer-credit">
-                <p>&copy; 2026 BioCascade. Built for Byte 2 Beat Hackathon.</p>
+                <p>&copy; 2026 BioCascade. Independent Research Project.</p>
                 <p class="footer-tech">Powered by NHANES • scikit-learn • SHAP • Flask</p>
             </div>
         </div>

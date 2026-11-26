@@ -1,261 +1,175 @@
-// ==========================================================================
-// BIOCASCADE SCREENING TOOL - FRONTEND LOGIC
-// ==========================================================================
+// BioCascade research demo
+const form = document.getElementById('biomarker-form');
+const picker = document.querySelector('.model-picker');
+const message = document.getElementById('form-message');
+const predictButton = document.getElementById('predict-btn');
+const profiles = {
+ one:{age:55,gender:1,systolic_bp:130,diastolic_bp:85,bmi:28.5,waist_cm:95,height_cm:170,hba1c:6.2,triglycerides:180,hdl_cholesterol:42,total_cholesterol:210,serum_creatinine:1.1,bun:18,uric_acid:6.5,hscrp:3.5,neutrophil_pct:65,lymphocyte_pct:25,hemoglobin:13.5,hematocrit:40,rdw:13.5,ferritin:100,serum_iron:80,sodium:140,potassium:4},
+ two:{age:72,gender:2,systolic_bp:165,diastolic_bp:95,bmi:34,waist_cm:110,height_cm:160,hba1c:8.1,triglycerides:250,hdl_cholesterol:32,total_cholesterol:245,serum_creatinine:1.8,bun:30,uric_acid:8,hscrp:8,neutrophil_pct:72,lymphocyte_pct:18,hemoglobin:11.5,hematocrit:35,rdw:16,ferritin:220,serum_iron:55,sodium:138,potassium:4.6}
+};
+let busy = false;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const timing = { loading: 1200, gauge: 2000, classification: 800, graph: 600, feature: 100 };
+const waitingText = document.querySelector('#waiting-state p');
+const idleText = waitingText.textContent;
 
-document.getElementById('predict-btn').addEventListener('click', async () => {
-    
-    // Collect all input values
-    const data = collectFormData();
-    
-    // Show loading state
-    setLoadingState(true);
-    
-    try {
-        const response = await fetch('/predict', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            await displayResults(result);
-        } else {
-            showError(result.error);
-        }
-        
-    } catch (error) {
-        showError('Request failed: ' + error.message);
-    } finally {
-        setLoadingState(false);
-    }
+function animateScore(gauge, percentage, circumference, target, duration) {
+ if (!duration) {
+  // Reduced motion: show the actual score without a moving sweep.
+  gauge.style.strokeDashoffset = circumference * (1 - target);
+  percentage.textContent = (target * 100).toFixed(1) + '%';
+  return wait(500);
+ }
+ return new Promise(resolve => {
+  let start;
+  function frame(now) {
+   if (start === undefined) start = now;
+   const progress = Math.min((now - start) / duration, 1);
+   const eased = 1 - Math.pow(1 - progress, 3);
+   const value = target * eased;
+   gauge.style.strokeDashoffset = circumference * (1 - value);
+   percentage.textContent = (value * 100).toFixed(1) + '%';
+   if (progress < 1 && !reducedMotion.matches) {
+    requestAnimationFrame(frame);
+   } else {
+    gauge.style.strokeDashoffset = circumference * (1 - target);
+    percentage.textContent = (target * 100).toFixed(1) + '%';
+    resolve();
+   }
+  }
+  requestAnimationFrame(frame);
+ });
+}
+function selectedModel(){return picker.querySelector('input:checked').value;}
+function status(text='',error=false){message.textContent=text;message.classList.toggle('error',error);}
+function clearResults(){
+ document.getElementById('results-content').style.display='none';
+ document.getElementById('waiting-state').style.display='';
+ waitingText.textContent = idleText;
+ document.getElementById('shap-plot').removeAttribute('src');
+ document.getElementById('features-list').replaceChildren();
+ document.getElementById('results-panel').removeAttribute('aria-busy');
+}
+function updateFields(){
+ const model=selectedModel();
+ form.querySelectorAll('[data-model]').forEach(group=>{
+  const active=group.dataset.model==='both'||group.dataset.model===model;
+  group.hidden=!active;
+  group.querySelectorAll('input,select').forEach(input=>{input.disabled=!active;input.required=active;});
+ });
+ form.querySelectorAll('.form-section').forEach(section=>{
+  const groups=[...section.querySelectorAll('[data-model]')];
+  section.hidden=groups.length>0&&groups.every(group=>group.hidden);
+ });
+ clearResults();status();
+}
+const requested=new URLSearchParams(location.search).get('model');
+if(requested==='A'||requested==='B')picker.querySelector('input[value="'+requested+'"]').checked=true;
+picker.addEventListener('change',updateFields);
+updateFields();
+document.getElementById('load-demo').addEventListener('click',()=>{
+ const profile=profiles[document.getElementById('demo-select').value];
+ Object.entries(profile).forEach(([id,value])=>{const input=document.getElementById(id);if(input)input.value=value;});
+ clearResults();status('Synthetic example loaded. Edit the values or switch models.');
 });
-
-// ==========================================================================
-// HELPER FUNCTIONS
-// ==========================================================================
-
-function collectFormData() {
-    return {
-        model: document.getElementById('model-select').value,
-        age: document.getElementById('age').value,
-        gender: document.getElementById('gender').value,
-        systolic_bp: document.getElementById('systolic_bp').value,
-        diastolic_bp: document.getElementById('diastolic_bp').value,
-        bmi: document.getElementById('bmi').value,
-        waist_cm: document.getElementById('waist_cm').value,
-        height_cm: document.getElementById('height_cm').value,
-        hba1c: document.getElementById('hba1c').value,
-        fasting_glucose: document.getElementById('fasting_glucose').value,
-        triglycerides: document.getElementById('triglycerides').value,
-        hdl_cholesterol: document.getElementById('hdl_cholesterol').value,
-        ldl_cholesterol: document.getElementById('ldl_cholesterol').value,
-        total_cholesterol: document.getElementById('total_cholesterol').value,
-        serum_creatinine: document.getElementById('serum_creatinine').value,
-        bun: document.getElementById('bun').value,
-        uric_acid: document.getElementById('uric_acid').value,
-        hscrp: document.getElementById('hscrp').value,
-        neutrophil_pct: document.getElementById('neutrophil_pct').value,
-        lymphocyte_pct: document.getElementById('lymphocyte_pct').value,
-        hemoglobin: document.getElementById('hemoglobin').value,
-        hematocrit: document.getElementById('hematocrit').value,
-        rdw: document.getElementById('rdw').value,
-        ferritin: 100,  // Default value
-        serum_iron: 80,  // Default value
-        sodium: 140,     // Default value
-        potassium: 4.0   // Default value
-    };
+document.getElementById('reset-form').addEventListener('click',()=>{form.reset();clearResults();status('Inputs cleared.');});
+form.addEventListener('input',event=>{if(event.target.matches('[data-model] input,[data-model] select')){clearResults();status();}});
+function setBusy(value){
+ busy=value;predictButton.disabled=value;predictButton.classList.toggle('loading',value);
+ predictButton.innerHTML=value?'<i class="bi bi-hourglass-split"></i> Analyzing biomarkers…':'<i class="bi bi-cpu-fill"></i> Calculate model score';
+ picker.disabled=value;
+ form.querySelectorAll('input,select,button[type="button"]').forEach(input=>{const group=input.closest('[data-model]');input.disabled=value||Boolean(group&&group.hidden);});
 }
+form.addEventListener('submit',async event=>{
+ event.preventDefault();if(busy||!form.reportValidity())return;
+ const data={model:selectedModel()};
+ form.querySelectorAll('[data-model]:not([hidden]) input,[data-model]:not([hidden]) select').forEach(input=>{data[input.id]=Number(input.value);});
+ if(data.model==='A'&&data.systolic_bp<data.diastolic_bp){status('Systolic pressure must not be lower than diastolic pressure.',true);return;}
+ clearResults();setBusy(true);status('Calculating the research proxy score…');
+ waitingText.textContent = 'Analyzing biomarkers… Please wait.';
+ const started = performance.now();
+ document.getElementById('results-panel').setAttribute('aria-busy','true');
+ try{
+  const response=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  const result=await response.json();
+  if(!response.ok||!result.success)throw new Error(result.error||'Prediction failed.');
+  // Keep the loading stage visible even when the prediction is very fast.
+  await wait(Math.max(0, timing.loading - (performance.now() - started)));
+  status('Revealing model result…');
+  await displayResults(result);
+  status('Prediction complete.');
+ }catch(error){clearResults();status('Prediction failed: '+error.message,true);}finally{document.getElementById('results-panel').removeAttribute('aria-busy');setBusy(false);}
+});
+async function displayResults(result){
+ const panel = document.getElementById('results-panel');
+ const content = document.getElementById('results-content');
+ const target = Number(result.risk_score);
+ if (!Number.isFinite(target) || target < 0 || target > 1) throw new Error('Invalid model score.');
+ const high = result.risk_class === 'High Risk';
+ const gauge = document.querySelector('.gauge-fill');
+ const circumference = 2 * Math.PI * Number(gauge.getAttribute('r'));
+ const percentage = document.getElementById('risk-percentage');
+ const classification = document.getElementById('risk-classification');
+ const model = document.getElementById('model-used');
+ const note = content.querySelector('.risk-score-display .form-note');
+ const shapSection = content.querySelector('.shap-explanation');
+ const topSection = content.querySelector('.top-features');
+ const plot = document.getElementById('shap-plot');
+ const list = document.getElementById('features-list');
+ const pause = wait;
 
-function setLoadingState(isLoading) {
-    const btn = document.getElementById('predict-btn');
-    
-    if (isLoading) {
-        btn.classList.add('loading');
-        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Analyzing Biomarkers...';
-    } else {
-        btn.classList.remove('loading');
-        btn.innerHTML = '<i class="bi bi-cpu-fill"></i> Calculate Risk Score';
-    }
-}
+ // Reset every result, including repeated predictions with the same score.
+ gauge.setAttribute('class','gauge-fill ' + (high ? 'high-risk' : 'low-risk'));
+ gauge.style.strokeDasharray = circumference;
+ gauge.style.strokeDashoffset = circumference;
+ percentage.textContent = '0.0%';
+ percentage.classList.add('show');
+ classification.className = 'risk-classification ' + (high ? 'high' : 'low');
+ classification.textContent = high ? 'High proxy risk' : 'Low proxy risk';
+ model.textContent = result.model_used;
+ for (const element of [classification, model, note, shapSection, topSection]) {
+  element.hidden = true;
+  element.classList.remove('show', 'result-reveal');
+ }
+ list.replaceChildren();
+ if (result.shap_plot) plot.src = result.shap_plot;
+ document.getElementById('waiting-state').style.display = 'none';
+ content.style.display = 'block';
+ // Make the gauge visible before starting the animation on every screen size.
+ const bounds = gauge.getBoundingClientRect();
+ if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
+  panel.scrollIntoView({behavior:reducedMotion.matches?'auto':'smooth',block:'start'});
+  await pause(reducedMotion.matches ? 0 : 350);
+ }
+ await animateScore(gauge, percentage, circumference, target, reducedMotion.matches ? 0 : timing.gauge);
 
-async function displayResults(result) {
-    // Hide waiting state, show results
-    document.getElementById('waiting-state').style.display = 'none';
-    document.getElementById('results-content').style.display = 'block';
-    
-    // Animate gauge
-    await animateGauge(result.risk_score);
-    
-    // Show risk classification
-    await delay(800);
-    showRiskClassification(result.risk_class, result.risk_score);
-    
-    // Show model badge
-    document.getElementById('model-used').textContent = result.model_used;
-    
-    // Show SHAP plot
-    await delay(400);
-    showShapPlot(result.shap_plot);
-    
-    // Show top features
-    await delay(200);
-    showTopFeatures(result.top_features);
-    
-    // Smooth scroll to results
-    document.getElementById('results-panel').scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'nearest' 
-    });
-}
-
-function animateGauge(riskScore) {
-    return new Promise((resolve) => {
-        const percentage = (riskScore * 100).toFixed(1);
-        const gaugeElement = document.querySelector('.gauge-fill');
-        const percentageElement = document.getElementById('risk-percentage');
-        
-        // Calculate circle parameters
-        const radius = 130;
-        const circumference = 2 * Math.PI * radius;
-        
-        // Set initial state
-        gaugeElement.style.strokeDasharray = circumference;
-        gaugeElement.style.strokeDashoffset = circumference;
-        
-        // Determine risk level and color
-        let riskLevel, gaugeClass;
-        if (riskScore < 0.3) {
-            riskLevel = 'Low';
-            gaugeClass = 'low-risk';
-        } else if (riskScore < 0.7) {
-            riskLevel = 'Medium';
-            gaugeClass = 'medium-risk';
-        } else {
-            riskLevel = 'High';
-            gaugeClass = 'high-risk';
-        }
-        
-        gaugeElement.className = `gauge-fill ${gaugeClass}`;
-        
-        // Animate the gauge fill
-        setTimeout(() => {
-            const offset = circumference - (riskScore * circumference);
-            gaugeElement.style.strokeDashoffset = offset;
-        }, 100);
-        
-        // Animate the percentage number
-        setTimeout(() => {
-            percentageElement.textContent = percentage + '%';
-            percentageElement.classList.add('show');
-            
-        }, 300);
-        
-        // Counter animation
-        animateCounter(0, parseFloat(percentage), 1500, (val) => {
-            percentageElement.textContent = val.toFixed(1) + '%';
-        });
-        
-        setTimeout(resolve, 2000);
-    });
-}
-
-function animateCounter(start, end, duration, callback) {
-    const startTime = performance.now();
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Ease out cubic
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const current = start + (end - start) * easeProgress;
-        
-        callback(current);
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-    
-    requestAnimationFrame(update);
-}
-
-function showRiskClassification(riskClass, riskScore) {
-    const classElement = document.getElementById('risk-classification');
-    
-    let className = 'low';
-    if (riskScore >= 0.7) className = 'high';
-    else if (riskScore >= 0.3) className = 'medium';
-    
-    classElement.className = `risk-classification ${className}`;
-    classElement.textContent = riskClass;
-    
-    setTimeout(() => {
-        classElement.classList.add('show');
-    }, 100);
-}
-
-function showShapPlot(plotData) {
-    const shapSection = document.querySelector('.shap-explanation');
-    const plotImg = document.getElementById('shap-plot');
-    
-    if (plotData) {
-        plotImg.src = plotData;
-        setTimeout(() => {
-            shapSection.classList.add('show');
-        }, 100);
-    }
-}
-
-function showTopFeatures(features) {
-    const featuresList = document.getElementById('features-list');
-    const topSection = document.querySelector('.top-features');
-    
-    featuresList.innerHTML = '';
-    
-    features.forEach((feat, index) => {
-        const div = document.createElement('div');
-        div.className = `feature-item ${feat.shap_value > 0 ? 'positive' : 'negative'}`;
-        
-        const impactColor = feat.shap_value > 0 ? '#ef4444' : '#10b981';
-        const impactText = feat.shap_value > 0 ? 'Risk Factor' : 'Protective';
-        
-        div.innerHTML = `
-            <div>
-                <div class="feature-name">${feat.feature}</div>
-                <div class="feature-value">Value: ${feat.feature_value.toFixed(2)}</div>
-            </div>
-            <div class="feature-impact">
-                <div class="shap-value" style="color: ${impactColor}">
-                    ${feat.shap_value > 0 ? '+' : ''}${feat.shap_value.toFixed(3)}
-                </div>
-                <div class="impact-label" style="color: ${impactColor}">
-                    ${impactText}
-                </div>
-            </div>
-        `;
-        
-        featuresList.appendChild(div);
-        
-        // Stagger animation
-        setTimeout(() => {
-            div.classList.add('show');
-        }, index * 100);
-    });
-    
-    setTimeout(() => {
-        topSection.classList.add('show');
-    }, 100);
-}
-
-function showError(message) {
-    alert('❌ Error: ' + message);
-}
-
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+ function reveal(element) {
+  element.hidden = false;
+  element.classList.add('show', 'result-reveal');
+ }
+ reveal(classification);
+ reveal(model);
+ reveal(note);
+ await pause(timing.classification);
+ if (result.shap_plot) {
+  reveal(shapSection);
+  await pause(timing.graph);
+ }
+ for(const feat of result.top_features||[]){
+  const positive=feat.shap_value>0,item=document.createElement('div');item.className='feature-item '+(positive?'positive':'negative');
+  const name=document.createElement('div'),title=document.createElement('div'),value=document.createElement('div');
+  title.className='feature-name';title.textContent=feat.feature;value.className='feature-value';value.textContent='Value: '+Number(feat.feature_value).toFixed(2);name.append(title,value);
+  const impact=document.createElement('div'),score=document.createElement('div'),label=document.createElement('div');
+  impact.className='feature-impact';score.className='shap-value';score.textContent=(positive?'+':'')+Number(feat.shap_value).toFixed(3);score.style.color=positive?'#f87171':'#34d399';
+  label.className='impact-label';label.textContent=positive?'Raises model score':feat.shap_value<0?'Lowers model score':'No score change';impact.append(score,label);item.append(name,impact);list.append(item);
+ }
+ if (list.children.length) {
+  reveal(topSection);
+  for (const item of list.children) {
+   item.classList.add('show', 'result-reveal');
+   await pause(timing.feature);
+  }
+  if (!reducedMotion.matches) await pause(300);
+ }
 }

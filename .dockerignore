@@ -1,6 +1,43 @@
-.venv
-__pycache__
-.git
+
+# Python
+.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Git
+.git/
+.github/
 .gitignore
-*.ipynb_checkpoints
-.vscode
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Research and development
+notebooks/
+*.ipynb
+.ipynb_checkpoints/
+tests/
+docs/
+src/
+sql/
+requirements-dev.txt
+
+# Data not required at runtime
+data/raw/
+data/processed/*.csv
+data/processed/*.db
+data/processed/*.parquet
+
+# Infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# Environment variables
+.env
+.env.*
