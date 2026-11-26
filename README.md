@@ -1,5 +1,8 @@
 # 🧬 BioCascade
 
+[![BioCascade CI](https://github.com/beko-1enkosi/BioCascade/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/beko-1enkosi/BioCascade/actions/workflows/ci.yml)
+![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB) ![scikit-learn 1.9.1](https://img.shields.io/badge/scikit--learn-1.9.1-F7931E)
+
 **Interpretable machine learning for multi-system cardiometabolic dysfunction**
 
 BioCascade is a research-oriented, full-stack machine learning application inspired by heart failure with preserved ejection fraction (HFpEF). It combines biological domain knowledge, data engineering, statistical analysis, and explainable AI to investigate whether routine biomarkers can distinguish a research-defined vascular, metabolic and renal dysfunction phenotype.
@@ -8,7 +11,7 @@ BioCascade is a research-oriented, full-stack machine learning application inspi
 
 **Explore:** [Research notebook](notebooks/BioCascade_Complete_Analysis.ipynb) · [Application source](app/) · [Data and ML pipeline](src/)
 
-Live demo: deployment pending portfolio release.
+**Deployment:** Docker and Gunicorn configuration is ready for hosting; a public demo URL will be added after deployment and verification.
 
 ## 1. Scientific motivation
 
@@ -47,15 +50,15 @@ The notebook reads `raw_patient_data` and `labeled_patients` from `data/processe
 
 ## 3. Research phenotype definition
 
-The notebook describes a binary target based on at least two of the following three indicators:
+The SQL label definition (`sql/label_definition.sql`) constructs a binary target based on at least two of the following three indicators:
 
 | System | Research indicator |
 |---|---|
-| Vascular | Systolic blood pressure ≥ 140 mmHg |
+| Vascular | Systolic blood pressure > 140 mmHg |
 | Metabolic | HbA1c ≥ 6.5% |
 | Renal | Serum creatinine > 1.3 mg/dL (male) or > 1.1 mg/dL (female) |
 
-The precise threshold implementation should be checked against `sql/label_definition.sql` before regenerating labels (the earlier README used `> 140` for systolic BP).
+The SQL excludes records missing any of the three label-defining measurements. The historical notebook's prose differs at the systolic BP boundary; the table above follows the actual SQL implementation.
 
 | Proxy class | Count | Share | Mean age |
 |---|---:|---:|---:|
@@ -96,9 +99,24 @@ The two central interaction features are:
 | Purpose | Label reconstruction benchmark | Evaluate indirect predictive signal |
 | Main limitation | Circularity from label-related inputs | Modest minority-class detection and no external validation |
 
-The recorded experiment used a stratified 80/20 split (3,658 training and 915 testing observations), random seed 42, median imputation fitted on training data, and balanced class weights. Candidate features with at most 50% observed values were filtered out. Model B excludes direct BP, glucose and creatinine inputs and label-derived interactions by design; the saved feature set and preprocessing should be audited before release.
+The recorded experiment used a stratified 80/20 split (3,658 training and 915 testing observations), random seed 42, median imputation fitted on training data, and balanced class weights. Candidate features with at most 50% observed values were filtered out. Model B excludes direct BP, glucose and creatinine inputs and label-derived interactions by design. Both historical test matrices were reconstructed and matched during retraining. The imputer is fitted on training data only.
 
 ## 6. Model evaluation
+
+### Current released model artifacts
+
+Both models were retrained under scikit-learn 1.9.1 using the reconstructed historical holdout (seed 42). Evaluation results are recorded in [docs/model_metrics.json](docs/model_metrics.json).
+
+| Metric | Model A — Upper Bound | Model B — Independent |
+|---|---:|---:|
+| ROC-AUC | 0.9984 | 0.8293 |
+| Average precision | 0.9803 | 0.2869 |
+| Accuracy | 0.9880 | 0.8699 |
+| Positive-class precision | 0.8904 | 0.2960 |
+| Positive-class recall | 0.9559 | 0.5441 |
+| Positive-class F1 | 0.9220 | 0.3834 |
+
+The holdout contains 915 records, including 68 positive proxy cases. Model A's near-perfect discrimination reflects access to target-defining features; Model B's modest precision and recall underscore the limitations of indirect prediction. Neither model has been validated as a clinical screening tool. The scores are not calibrated probabilities of HFpEF.
 
 ### Historical notebook results
 
@@ -112,7 +130,7 @@ The recorded experiment used a stratified 80/20 split (3,658 training and 915 te
 | Average precision | — | 0.2733 |
 | Reported mean cross-validation ROC-AUC | — | 0.8572 |
 
-The test set contained 847 low-class and 68 high-class observations. These are historical notebook outputs, not independently reproduced metrics for the current deployed artifacts. The notebook narrative and some existing UI labels report slightly different values; the table uses the recorded numerical outputs. Cross-validation preprocessing still needs to be audited.
+The test set contained 847 low-class and 68 high-class observations. These are historical notebook outputs, distinct from the retrained artifacts reported above. The figures in the following sections remain historical research figures rather than regenerated plots for the current models. Cross-validation preprocessing still needs to be audited.
 
 ![ROC curves comparing the two models](app/static/plots/03_roc_comparison.png)
 
@@ -154,9 +172,22 @@ SHAP (SHapley Additive exPlanations) attributes a model output to its input feat
 
 The Flask application serves a dashboard and interactive screening demonstration built using vanilla HTML, CSS and JavaScript. It accepts biomarker inputs, engineers features, selects the appropriate model feature set, applies the saved imputer, generates a model score and returns a SHAP waterfall and contributing features.
 
-Both models and SHAP outputs were smoke-tested locally during the portfolio revamp. The saved Model B is a scikit-learn pipeline; the app uses its underlying `rf` estimator for TreeExplainer while retaining the pipeline for prediction.
+The dashboard retains the original scroll-driven DNA animation. The responsive screening terminal includes:
 
-Current local smoke-test outputs for the same existing example profile: Model A 1.1%, Model B 52.0%. These demonstrate functionality only, not clinical validity. Synthetic demo profiles, clearer model selection and responsive layout improvements are planned for release.
+- Selectable Model A and Model B cards with their current ROC-AUC values and research purpose.
+- Model-specific biomarker fields, empty inputs with example placeholders, two synthetic demo profiles and reset functionality.
+- A staged circular score animation followed by classification, SHAP waterfall and individual feature contributions.
+- Explicit research-only wording and reduced-motion support.
+
+Both models and SHAP outputs were smoke-tested locally. The saved Model B is a scikit-learn pipeline; the app uses its underlying `rf` estimator for TreeExplainer while retaining the pipeline for prediction.
+
+The browser requires the selected model's inputs. The API validates supplied values but still defaults some omitted fields; strict server-side required-field validation remains a follow-up task. Use synthetic profiles only; do not submit personal or clinical data.
+
+| Route | Purpose |
+|---|---|
+| `GET /` | Research dashboard |
+| `GET /screening-tool` | Interactive model demonstration |
+| `POST /predict` | Return a research proxy score, classification and SHAP explanation |
 
 ## 9. System architecture
 
@@ -182,10 +213,11 @@ flowchart TD
 | Data engineering | Python, DuckDB, SQL, pandas, NumPy, PyArrow |
 | Machine learning | scikit-learn, Random Forest, joblib |
 | Explainability and visualization | SHAP, matplotlib, seaborn |
-| Backend | Flask |
+| Backend | Flask, Gunicorn (production WSGI) |
 | Frontend | HTML, CSS, vanilla JavaScript |
 | Research | Jupyter Notebook |
 | Packaging and version control | Docker, Git, GitHub |
+| Testing and CI | pytest, GitHub Actions |
 
 ## 11. Repository structure
 
@@ -205,25 +237,72 @@ BioCascade/
 │   └── BioCascade_Complete_Analysis.ipynb
 ├── sql/
 ├── src/
+│   └── train_models.py
+├── docs/
+│   └── model_metrics.json
+├── tests/
+├── .github/workflows/ci.yml
 ├── Dockerfile
+├── .dockerignore
 ├── requirements.txt
+├── requirements-dev.txt
 └── README.md
 ```
 
-## 12. Run locally
+## 12. Run, test and deploy
+
+### Local development
+
+Use Python 3.13 and the pinned dependencies. The four current model and imputer artifacts were serialized using scikit-learn 1.9.1. Only load trusted artifacts.
 
 ```bash
 git clone https://github.com/beko-1enkosi/BioCascade.git
 cd BioCascade
-python3 -m venv .venv
+python3.13 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
-python app/app.py
+python -m pip install -r requirements-dev.txt
+python -m flask --app app.app run --port 5002
 ```
 
-Open `http://127.0.0.1:5000`. On Windows, activate with `.venv\Scripts\activate` instead. Python 3.13 was used in the local smoke test. The existing saved artifacts were serialized using different scikit-learn versions (1.8.0 and 1.9.0), while the smoke test used 1.9.1. Cross-version loading is not guaranteed to be reliable; a validated, pinned environment is a release requirement. Only load trusted model artifacts.
+Open `http://127.0.0.1:5002` and select Try Demo. On Windows, activate with `.venv\Scripts\activate` instead.
 
-The repository includes saved models; retraining is not necessary for the current local demonstration. The original research notebook is retained for transparency. Its relative paths and full execution have not yet been reverified after relocation. Do not rerun training blindly over existing artifacts.
+### Automated tests
+
+```bash
+python -m pip check
+python -m pytest -q -W error::sklearn.exceptions.InconsistentVersionWarning
+```
+
+The local release test run passed all 40 tests, covering feature engineering, model loading and inference, SHAP, API validation and training. GitHub Actions runs the Python suite on Ubuntu with Python 3.13. The CI badge above tracks the main branch.
+
+### Docker and production server
+
+```bash
+docker build -t biocascade:latest .
+docker run --rm --name biocascade -p 5001:5000 biocascade:latest
+```
+
+Open `http://127.0.0.1:5001`. The container runs Gunicorn with one worker and one thread, as a non-root user, and includes the Flask application and four required model/imputer artifacts. It accepts the hosting provider's `PORT` environment variable (default 5000). Research data, notebooks and training code are not copied into the runtime image.
+
+To simulate a small hosting instance locally:
+
+```bash
+docker run --rm --name biocascade-limited \
+  --memory=512m --memory-swap=512m --cpus=1 \
+  -p 5001:5000 biocascade:latest
+```
+
+The local constrained run loaded both models and served Model B predictions successfully; an observed memory snapshot was 185.5 MiB out of 512 MiB, not a measured peak or a guarantee of cloud performance. One worker timeout occurred and recovered. Verify cold starts, both model predictions, peak memory and repeated requests on the chosen host before publishing the live URL.
+
+### Reproduce training
+
+The application does not require retraining. For research reproduction, run from the repository root with the included processed database and historical test matrices:
+
+```bash
+python src/train_models.py
+```
+
+The script reconstructs the holdout, fits training-only median imputers, trains both Random Forest models and writes candidate artifacts and metrics to `.venv/candidate_models/`, leaving the current deployed artifacts unchanged. The historical test matrices matched for both models during the revamp. The research notebook is preserved; full execution and relative paths after relocation have not yet been reverified.
 
 ## 13. Findings, limitations and future work
 
@@ -237,9 +316,9 @@ Key limitations include:
 - **Single survey cohort:** External validation and consideration of survey design and sampling weights are needed.
 - **Missingness and class imbalance:** Feature availability and minority-class precision/recall constrain interpretation.
 - **Calibration and thresholds:** Class weighting and a default classification threshold do not establish calibrated clinical probabilities.
-- **Reproducibility:** Saved artifact versions, training-serving feature parity, historical plot provenance and cross-validation preprocessing require verification.
+- **Reproducibility:** The current artifacts and dependencies are aligned; training-serving parity, historical plot provenance, notebook execution and cross-validation preprocessing still warrant further verification.
 
-Future work includes a controlled feature-ablation study, leakage-safe evaluation, calibration and threshold analysis, consistent dependency and model versions, and external validation with appropriate confirmed outcomes. Longitudinal datasets, imaging and other modalities could be explored if available and scientifically justified.
+Future work includes a controlled feature-ablation study, leakage-safe evaluation, calibration and threshold analysis, strict API required-field enforcement, and external validation with appropriate confirmed outcomes. Longitudinal datasets, imaging and other modalities could be explored if available and scientifically justified.
 
 ## 14. Author and acknowledgments
 
