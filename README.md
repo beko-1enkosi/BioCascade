@@ -11,7 +11,9 @@ BioCascade is a research-oriented, full-stack machine learning application inspi
 
 **Explore:** [Research notebook](notebooks/BioCascade_Complete_Analysis.ipynb) · [Application source](app/) · [Data and ML pipeline](src/)
 
-**Deployment:** Docker and Gunicorn configuration is ready for hosting; a public demo URL will be added after deployment and verification.
+**Live demo:** [Launch BioCascade](https://biocascade.onrender.com/) · [Screening terminal](https://biocascade.onrender.com/screening-tool)
+
+Hosted on Render using Docker and Gunicorn. The free instance sleeps when inactive, so the first visit may take 50 seconds or longer. Use the built-in synthetic demo profiles only.
 
 ## 1. Scientific motivation
 
@@ -273,7 +275,7 @@ python -m pip check
 python -m pytest -q -W error::sklearn.exceptions.InconsistentVersionWarning
 ```
 
-The initial local release test run passed all 40 tests. The expanded suite adds direct API tests for every required-field omission, valid model-specific payloads, malformed inputs and inactive biomarker isolation, alongside feature engineering, inference, SHAP and training coverage. GitHub Actions runs the Python suite on Ubuntu with Python 3.13. The CI badge above tracks the main branch.
+The expanded local test suite passed all **96 tests with zero warnings**, including direct API tests for every required-field omission, valid model-specific payloads, malformed inputs and inactive biomarker isolation, alongside feature engineering, inference, SHAP and training coverage. GitHub Actions runs the Python suite on Ubuntu with Python 3.13. The CI badge above tracks the main branch.
 
 ### Docker and production server
 
@@ -292,7 +294,7 @@ docker run --rm --name biocascade-limited \
   -p 5001:5000 biocascade:latest
 ```
 
-The local constrained run loaded both models and served Model B predictions successfully; an observed memory snapshot was 185.5 MiB out of 512 MiB, not a measured peak or a guarantee of cloud performance. One worker timeout occurred and recovered. Verify cold starts, both model predictions, peak memory and repeated requests on the chosen host before publishing the live URL.
+The local constrained run loaded both models and served Model B predictions successfully; an observed memory snapshot was 185.5 MiB out of 512 MiB, not a measured peak or a guarantee of cloud performance. One worker timeout occurred and recovered. The Render deployment succeeded on 26 November 2026; dashboard health checks and a live Model B prediction with SHAP were confirmed. Continue monitoring cold starts, peak memory and repeated requests; verify both models on the hosted instance.
 
 ### Reproduce training
 
