@@ -30,7 +30,7 @@ try:
     
     model_b = joblib.load(os.path.join(DATA_DIR, 'biocascade_model_independent.joblib'))
     imputer_b = joblib.load(os.path.join(DATA_DIR, 'imputer_independent.joblib'))
-    explainer_b = shap.TreeExplainer(model_b)
+    explainer_b = shap.TreeExplainer(model_b.named_steps['rf'])
     
     # GET ACTUAL FEATURE NAMES FROM MODELS
     MODEL_A_FEATURES = list(imputer_a.feature_names_in_)
