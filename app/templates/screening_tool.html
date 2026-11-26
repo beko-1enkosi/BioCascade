@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BioCascade | Screening Terminal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/screening.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -16,31 +17,25 @@
                 <i class="bi bi-arrow-left"></i> Back to Dashboard
             </a>
             <h1>BioCascade Screening Terminal</h1>
-            <div class="model-selector">
-                <label>Model:</label>
-                <select id="model-select">
-                    <option value="B" selected>Model B (Independent Screening)</option>
-                    <option value="A">Model A (Upper Bound)</option>
-                </select>
-            </div>
+            <span class="research-pill">Research demo</span>
         </header>
 
-        <div class="main-container">
+        <fieldset class="model-picker"><legend>Choose a research model</legend><p class="form-note">Compare the upper-bound benchmark with the independent model. Scores estimate a research proxy, not disease probability.</p><div class="model-options"><label class="model-option model-a"><input type="radio" name="model" value="A"><span><strong>Model A · Upper Bound</strong><span class="model-stat">31 features · ROC-AUC 0.9984</span><span>Includes blood pressure, HbA1c and renal markers. Benchmark with target overlap.</span></span></label><label class="model-option model-b"><input type="radio" name="model" value="B" checked><span><strong>Model B · Independent</strong><span class="model-stat">21 features · ROC-AUC 0.8293</span><span>Excludes label-defining inputs and derivatives. Research-only independent predictors.</span></span></label></div></fieldset><div class="main-container">
             
             <!-- Input Form -->
-            <div class="input-panel">
-                <h3>Patient Biomarkers</h3>
+            <form class="input-panel" id="biomarker-form">
+                <h3>Biomarker inputs</h3><p class="form-note">Use synthetic data only. Examples are not reference ranges. Required fields depend on the selected model.</p><div class="demo-actions"><label for="demo-select">Example profile</label><select id="demo-select"><option value="one">Example 1 — mixed biomarkers</option><option value="two">Example 2 — elevated markers</option></select><button type="button" id="load-demo" class="secondary-btn"><i class="bi bi-lightning-charge"></i> Load demo</button><button type="button" id="reset-form" class="secondary-btn">Reset</button></div><p id="form-message" role="status" class="form-message"></p>
                 
                 <div class="form-section">
                     <h4><i class="bi bi-person-fill"></i> Demographics</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>Age (years)</label>
-                            <input type="number" id="age" value="55" min="18" max="100">
+                        <div class="input-group" data-model="both">
+                            <label for="age">Age (years)</label>
+                            <input type="number" id="age" placeholder="e.g. 55" required min="18" max="100">
                         </div>
-                        <div class="input-group">
-                            <label>Gender</label>
-                            <select id="gender">
+                        <div class="input-group" data-model="both">
+                            <label for="gender">Sex code (dataset)</label>
+                            <select id="gender" required><option value="">Choose sex code</option>
                                 <option value="1">Male</option>
                                 <option value="2">Female</option>
                             </select>
@@ -51,13 +46,13 @@
                 <div class="form-section">
                     <h4><i class="bi bi-heart-pulse-fill"></i> Blood Pressure</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>Systolic BP (mmHg)</label>
-                            <input type="number" id="systolic_bp" value="130" min="80" max="200">
+                        <div class="input-group" data-model="A">
+                            <label for="systolic_bp">Systolic BP (mmHg)</label>
+                            <input type="number" id="systolic_bp" placeholder="e.g. 130" required min="80" max="200">
                         </div>
-                        <div class="input-group">
-                            <label>Diastolic BP (mmHg)</label>
-                            <input type="number" id="diastolic_bp" value="85" min="50" max="120">
+                        <div class="input-group" data-model="A">
+                            <label for="diastolic_bp">Diastolic BP (mmHg)</label>
+                            <input type="number" id="diastolic_bp" placeholder="e.g. 85" required min="50" max="120">
                         </div>
                     </div>
                 </div>
@@ -65,17 +60,17 @@
                 <div class="form-section">
                     <h4><i class="bi bi-rulers"></i> Anthropometrics</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>BMI (kg/m²)</label>
-                            <input type="number" step="0.1" id="bmi" value="28.5" min="15" max="50">
+                        <div class="input-group" data-model="both">
+                            <label for="bmi">BMI (kg/m²)</label>
+                            <input type="number" step="0.1" id="bmi" placeholder="e.g. 28.5" required min="15" max="50">
                         </div>
-                        <div class="input-group">
-                            <label>Waist (cm)</label>
-                            <input type="number" id="waist_cm" value="95" min="50" max="150">
+                        <div class="input-group" data-model="both">
+                            <label for="waist_cm">Waist (cm)</label>
+                            <input type="number" id="waist_cm" placeholder="e.g. 95" required min="50" max="150">
                         </div>
-                        <div class="input-group">
-                            <label>Height (cm)</label>
-                            <input type="number" id="height_cm" value="170" min="100" max="220">
+                        <div class="input-group" data-model="both">
+                            <label for="height_cm">Height (cm)</label>
+                            <input type="number" id="height_cm" placeholder="e.g. 170" required min="100" max="220">
                         </div>
                     </div>
                 </div>
@@ -83,35 +78,29 @@
                 <div class="form-section">
                     <h4><i class="bi bi-droplet-fill"></i> Glucose Metabolism</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>HbA1c (%)</label>
-                            <input type="number" step="0.1" id="hba1c" value="6.2" min="4" max="15">
+                        <div class="input-group" data-model="A">
+                            <label for="hba1c">HbA1c (%)</label>
+                            <input type="number" step="0.1" id="hba1c" placeholder="e.g. 6.2" required min="4" max="15">
                         </div>
-                        <div class="input-group">
-                            <label>Fasting Glucose (mg/dL)</label>
-                            <input type="number" id="fasting_glucose" value="105" min="60" max="300">
-                        </div>
+                        
                     </div>
                 </div>
 
                 <div class="form-section">
                     <h4><i class="bi bi-water"></i> Lipid Panel</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>Triglycerides (mg/dL)</label>
-                            <input type="number" id="triglycerides" value="180" min="30" max="500">
+                        <div class="input-group" data-model="A">
+                            <label for="triglycerides">Triglycerides (mg/dL)</label>
+                            <input type="number" id="triglycerides" placeholder="e.g. 180" required min="30" max="500">
                         </div>
-                        <div class="input-group">
-                            <label>HDL (mg/dL)</label>
-                            <input type="number" id="hdl_cholesterol" value="42" min="20" max="100">
+                        <div class="input-group" data-model="both">
+                            <label for="hdl_cholesterol">HDL (mg/dL)</label>
+                            <input type="number" id="hdl_cholesterol" placeholder="e.g. 42" required min="20" max="100">
                         </div>
-                        <div class="input-group">
-                            <label>LDL (mg/dL)</label>
-                            <input type="number" id="ldl_cholesterol" value="130" min="50" max="250">
-                        </div>
-                        <div class="input-group">
-                            <label>Total Cholesterol (mg/dL)</label>
-                            <input type="number" id="total_cholesterol" value="210" min="100" max="350">
+                        
+                        <div class="input-group" data-model="both">
+                            <label for="total_cholesterol">Total Cholesterol (mg/dL)</label>
+                            <input type="number" id="total_cholesterol" placeholder="e.g. 210" required min="100" max="350">
                         </div>
                     </div>
                 </div>
@@ -119,17 +108,17 @@
                 <div class="form-section">
                     <h4><i class="bi bi-activity"></i> Renal Function</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>Creatinine (mg/dL)</label>
-                            <input type="number" step="0.1" id="serum_creatinine" value="1.1" min="0.5" max="5">
+                        <div class="input-group" data-model="A">
+                            <label for="serum_creatinine">Creatinine (mg/dL)</label>
+                            <input type="number" step="0.1" id="serum_creatinine" placeholder="e.g. 1.1" required min="0.5" max="5">
                         </div>
-                        <div class="input-group">
-                            <label>BUN (mg/dL)</label>
-                            <input type="number" id="bun" value="18" min="5" max="50">
+                        <div class="input-group" data-model="A">
+                            <label for="bun">BUN (mg/dL)</label>
+                            <input type="number" id="bun" placeholder="e.g. 18" required min="5" max="50">
                         </div>
-                        <div class="input-group">
-                            <label>Uric Acid (mg/dL)</label>
-                            <input type="number" step="0.1" id="uric_acid" value="6.5" min="2" max="12">
+                        <div class="input-group" data-model="both">
+                            <label for="uric_acid">Uric Acid (mg/dL)</label>
+                            <input type="number" step="0.1" id="uric_acid" placeholder="e.g. 6.5" required min="2" max="12">
                         </div>
                     </div>
                 </div>
@@ -137,17 +126,17 @@
                 <div class="form-section">
                     <h4><i class="bi bi-fire"></i> Inflammatory Markers</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>hsCRP (mg/L)</label>
-                            <input type="number" step="0.1" id="hscrp" value="3.5" min="0.1" max="20">
+                        <div class="input-group" data-model="both">
+                            <label for="hscrp">hsCRP (mg/L)</label>
+                            <input type="number" step="0.1" id="hscrp" placeholder="e.g. 3.5" required min="0.1" max="20">
                         </div>
-                        <div class="input-group">
-                            <label>Neutrophils (%)</label>
-                            <input type="number" step="0.1" id="neutrophil_pct" value="65" min="30" max="80">
+                        <div class="input-group" data-model="both">
+                            <label for="neutrophil_pct">Neutrophils (%)</label>
+                            <input type="number" step="0.1" id="neutrophil_pct" placeholder="e.g. 65" required min="30" max="80">
                         </div>
-                        <div class="input-group">
-                            <label>Lymphocytes (%)</label>
-                            <input type="number" step="0.1" id="lymphocyte_pct" value="25" min="10" max="50">
+                        <div class="input-group" data-model="both">
+                            <label for="lymphocyte_pct">Lymphocytes (%)</label>
+                            <input type="number" step="0.1" id="lymphocyte_pct" placeholder="e.g. 25" required min="10" max="50">
                         </div>
                     </div>
                 </div>
@@ -155,45 +144,45 @@
                 <div class="form-section">
                     <h4><i class="bi bi-clipboard-pulse"></i> Hematology</h4>
                     <div class="input-row">
-                        <div class="input-group">
-                            <label>Hemoglobin (g/dL)</label>
-                            <input type="number" step="0.1" id="hemoglobin" value="13.5" min="8" max="18">
+                        <div class="input-group" data-model="both">
+                            <label for="hemoglobin">Hemoglobin (g/dL)</label>
+                            <input type="number" step="0.1" id="hemoglobin" placeholder="e.g. 13.5" required min="8" max="18">
                         </div>
-                        <div class="input-group">
-                            <label>Hematocrit (%)</label>
-                            <input type="number" step="0.1" id="hematocrit" value="40" min="25" max="55">
+                        <div class="input-group" data-model="both">
+                            <label for="hematocrit">Hematocrit (%)</label>
+                            <input type="number" step="0.1" id="hematocrit" placeholder="e.g. 40" required min="25" max="55">
                         </div>
-                        <div class="input-group">
-                            <label>RDW (%)</label>
-                            <input type="number" step="0.1" id="rdw" value="13.5" min="10" max="20">
+                        <div class="input-group" data-model="both">
+                            <label for="rdw">RDW (%)</label>
+                            <input type="number" step="0.1" id="rdw" placeholder="e.g. 13.5" required min="10" max="20">
                         </div>
-                        <div class="input-group">
-                            <label>Ferritin (ng/mL)</label>
-                            <input type="number" id="ferritin" value="100" min="10" max="500">
+                        <div class="input-group" data-model="B">
+                            <label for="ferritin">Ferritin (ng/mL)</label>
+                            <input type="number" id="ferritin" placeholder="e.g. 100" required min="10" max="500">
                         </div>
-                        <div class="input-group">
-                            <label>Serum Iron (μg/dL)</label>
-                            <input type="number" id="serum_iron" value="80" min="30" max="200">
+                        <div class="input-group" data-model="B">
+                            <label for="serum_iron">Serum Iron (μg/dL)</label>
+                            <input type="number" id="serum_iron" placeholder="e.g. 80" required min="30" max="200">
                         </div>
                     </div>
                 </div>
 
-                <button id="predict-btn" class="predict-btn">
-                    <i class="bi bi-cpu-fill"></i> Calculate Risk Score
+                <div class="form-section"><h4><i class="bi bi-droplet"></i> Electrolytes</h4><div class="input-row"><div class="input-group" data-model="both"><label for="sodium">Sodium (mmol/L)</label><input type="number" id="sodium" placeholder="e.g. 140" min="1" step="any" required></div><div class="input-group" data-model="both"><label for="potassium">Potassium (mmol/L)</label><input type="number" id="potassium" placeholder="e.g. 4.0" min="0.1" step="any" required></div></div></div><button type="submit" id="predict-btn" class="predict-btn">
+                    <i class="bi bi-cpu-fill"></i> Calculate model score
                 </button>
-            </div>
+            </form>
 
             <!-- Results Panel -->
-            <div class="results-panel" id="results-panel">
+            <div class="results-panel" id="results-panel" aria-live="polite">
                 <div class="waiting-state" id="waiting-state">
                     <i class="bi bi-activity"></i>
-                    <p>Awaiting biomarker input...</p>
+                    <p>Choose a model, load a demo or enter synthetic values to see the result.</p>
                 </div>
 
                 <div class="results-content" id="results-content" style="display:none;">
                     <div class="risk-score-display">
                         <div class="pulse-indicator"></div>
-                        <h3>Risk Assessment</h3>
+                        <h3>Research proxy result</h3>
                         
                         <!-- Circular Gauge -->
                         <div class="risk-gauge">
@@ -224,7 +213,7 @@
                             <!-- Center Content -->
                             <div class="gauge-center">
                                 <div class="risk-percentage" id="risk-percentage">--</div>
-                                <div class="risk-subtitle">Risk Score</div>
+                                <div class="risk-subtitle">Proxy score</div>
                             </div>
                         </div>
                         
@@ -234,18 +223,18 @@
                         </div>
                         
                         <!-- Model Used Badge -->
-                        <div class="model-used" id="model-used">Awaiting Analysis</div>
+                        <div class="model-used" id="model-used">Awaiting Analysis</div><p class="form-note">A score above 50% is classified as high proxy risk. This is not a calibrated clinical probability or medical assessment.</p>
                     </div>
 
                     <div class="shap-explanation">
                         <h3><i class="bi bi-bar-chart-fill"></i> Feature Contributions (SHAP)</h3>
                         <div class="shap-plot-container">
-                            <img id="shap-plot" src="" alt="SHAP Waterfall Plot">
+                            <img id="shap-plot" alt="SHAP waterfall plot">
                         </div>
                     </div>
 
                     <div class="top-features">
-                        <h3><i class="bi bi-list-stars"></i> Top Contributing Factors</h3>
+                        <h3><i class="bi bi-list-stars"></i> Top model contributions</h3>
                         <div id="features-list"></div>
                     </div>
                 </div>

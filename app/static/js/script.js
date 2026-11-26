@@ -1,5 +1,8 @@
+if (window.gsap && window.ScrollTrigger && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 // Register the ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
+gsap.set(".main-title", {y: "110%"});
+gsap.set(".hero-description, .hero-actions", {opacity: 0});
 
 /**
  * 1. DNA SVG GENERATION
@@ -47,7 +50,7 @@ window.addEventListener("load", () => {
             delay: 0.2
         })
 
-        .to(".hero-description, .hackathon-tag", {
+        .to(".hero-description, .research-tag", {
             opacity: 1,
             y: 0,
             duration: 1,
@@ -237,23 +240,7 @@ document.querySelectorAll(".panel").forEach(p => observer.observe(p));
  * 7. SMOOTH NAVIGATION SCROLL
  */
 
-document.querySelectorAll(".nav-center a").forEach(link => {
-
-    link.addEventListener("click", e => {
-
-        e.preventDefault();
-
-        const target = document.querySelector(link.getAttribute("href"));
-
-        gsap.to(window, {
-            duration: 1.2,
-            scrollTo: target,
-            ease: "power2.out"
-        });
-
-    });
-
-});
+// Native anchor navigation respects scroll margin.
 
 
 /**
@@ -315,28 +302,6 @@ gsap.to(".cascade-arrow", {
     stagger: 0.2
 });
 
-// CVD Death Counter Logic
-let count = 0;
-const counterElement = document.getElementById('death-counter');
-
-// This triggers when the user scrolls to the "About" section
-ScrollTrigger.create({
-    trigger: "#about",
-    start: "top 80%",
-    onEnter: () => {
-        setInterval(() => {
-            count++;
-            counterElement.innerText = count.toLocaleString();
-            
-            // Subtle "red pulse" on the number when it changes
-            gsap.fromTo("#death-counter", 
-                { scale: 1.1, color: "#ffffff" }, 
-                { scale: 1, color: "#ef4444", duration: 0.4 }
-            );
-        }, 1700); // Increases by 1 every 1.7 seconds
-    }
-});
-
 gsap.from(".preview-card", {
     scrollTrigger: {
         trigger: ".interface-preview",
@@ -348,3 +313,4 @@ gsap.from(".preview-card", {
     duration: 0.8,
     ease: "back.out(1.7)"
 });
+}
