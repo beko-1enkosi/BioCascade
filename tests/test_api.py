@@ -104,3 +104,38 @@ def test_model_b_ignores_direct_label_inputs(client, demo_profile):
     assert first.get_json()["risk_score"] == pytest.approx(
         second.get_json()["risk_score"]
     )
+
+
+
+@pytest.mark.parametrize("invalid_input", [
+    {"model": "C"},
+    {"age": -25},
+    {"age": "abc"},
+    {"age": ""},
+    {"age": None},
+    {"age": True},
+    {"age": "NaN"},
+    {"gender": 5},
+    {"height_cm": 0},
+    {"serum_creatinine": -1},
+    {"hdl_cholesterol": 0},
+    {"lymphocyte_pct": 120},
+])
+def test_invalid_input(client, demo_profile, invalid_input):
+    payload = {
+        **demo_profile,
+        "model": "A",
+        **invalid_input
+    }
+
+    response = client.post("/predict", json=payload)
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False
+
+
+def test_empty_payload(client):
+    response = client.post("/predict", json={})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False

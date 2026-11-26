@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import io
 import base64
 import os
+import math
 
 app = Flask(__name__)
 
@@ -57,14 +58,61 @@ def dashboard():
 def screening_tool():
     return render_template("screening_tool.html")
 
+
+def validate_input(data):
+    if not isinstance(data, dict) or not data:
+        raise ValueError("Provide biomarker input data.")
+
+    if data.get("model") not in ("A", "B"):
+        raise ValueError("Select Model A or Model B.")
+
+    for field, value in data.items():
+        if field == "model":
+            continue
+
+        name = field.replace("_", " ").title()
+
+        if value is None or value == "":
+            raise ValueError(f"{name} is required.")
+
+        if isinstance(value, bool):
+            raise ValueError(f"{name} must be a number.")
+
+        try:
+            number = float(value)
+        except (ValueError, TypeError):
+            raise ValueError(f"{name} must be a number.")
+
+        if not math.isfinite(number):
+            raise ValueError(f"{name} must be finite.")
+
+        if number < 0:
+            raise ValueError(f"{name} cannot be negative.")
+
+        if field in (
+            "age", "height_cm", "bmi",
+            "serum_creatinine", "hdl_cholesterol"
+        ) and number <= 0:
+            raise ValueError(f"{name} must be greater than zero.")
+
+        if field == "gender" and number not in (1, 2):
+            raise ValueError("Invalid gender code.")
+
+        if field in (
+            "neutrophil_pct", "lymphocyte_pct", "hematocrit"
+        ) and number > 100:
+            raise ValueError(f"{name} cannot exceed 100%.")
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
     if model_a is None or model_b is None:
         return jsonify({'success': False, 'error': 'Models not loaded'}), 500
     
     try:
-        data = request.json
-        model_choice = data.get('model', 'B')
+        data = request.get_json(silent=True)
+        validate_input(data)
+        model_choice = data["model"]    
         
         print(f"\n{'='*70}")
         print(f"🔍 PREDICTION REQUEST (Model {model_choice})")
